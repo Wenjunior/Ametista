@@ -12,6 +12,7 @@ from sources.myssl import MySSL
 from sources.rapiddns import RapidDNS
 from sources.anubis_db import AnubisDB
 from sources.hudson_rock import HudsonRock
+from sources.cert_spotter import CertSpotter
 from sources.hackertarget import HackerTarget
 from sources.certificate_search import CertificateSearch
 
@@ -57,6 +58,7 @@ async def enumerate_subdomains(domain, timeout):
 		RapidDNS(),
 		AnubisDB(),
 		HudsonRock(),
+		CertSpotter(),
 		HackerTarget(),
 		CertificateSearch()
 	]
