@@ -12,6 +12,7 @@ from sources.rapiddns import RapidDNS
 from sources.anubis_db import AnubisDB
 from sources.hudson_rock import HudsonRock
 from sources.hackertarget import HackerTarget
+from sources.certificate_search import CertificateSearch
 
 DEFAULT_TIMEOUT = 10
 
@@ -54,7 +55,8 @@ async def enumerate_subdomains(domain, timeout):
 		RapidDNS(),
 		AnubisDB(),
 		HudsonRock(),
-		HackerTarget()
+		HackerTarget(),
+		CertificateSearch()
 	]
 
 	tasks = []
