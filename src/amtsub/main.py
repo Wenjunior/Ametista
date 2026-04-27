@@ -8,6 +8,7 @@ from sys import stderr
 from colorama import Fore, Style
 from argparse import HelpFormatter, ArgumentParser
 
+from sources.myssl import MySSL
 from sources.rapiddns import RapidDNS
 from sources.anubis_db import AnubisDB
 from sources.hudson_rock import HudsonRock
@@ -52,6 +53,7 @@ async def enumerate_subdomains(domain, timeout):
 	print('Enumerating subdomains for ' + domain)
 
 	sources = [
+		MySSL(),
 		RapidDNS(),
 		AnubisDB(),
 		HudsonRock(),
@@ -80,7 +82,7 @@ async def enumerate_subdomains(domain, timeout):
 
 		eprint('Could not search on ' + name)
 
-	pattern = r'[0-9a-z-]+\.' + domain
+	pattern = r'[0-9a-z-\.]+' + domain
 
 	all_results = [result for result in all_results if re.fullmatch(pattern, result)]
 
