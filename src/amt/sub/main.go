@@ -20,15 +20,17 @@ type SubOptions struct {
 	Output string
 }
 
-func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, locker *sync.Mutex, foundSubdomains *[]string) {
+func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, timeOut int, locker *sync.Mutex, foundSubdomains *[]string) {
 	defer waitGroup.Done()
 
-	subdomains, err := source.Search(domain)
+	subdomains, err := source.Search(domain, timeOut)
 
 	locker.Lock()
 
 	if err != nil {
-		utils.Eprintln(fmt.Sprintf("Could not search on %s", source.GetName()))
+		utils.Eprintln(fmt.Sprintf("Could not search on %s", source.GetName()), utils.YELLOW)
+
+		locker.Unlock()
 
 		return
 	}
@@ -38,7 +40,7 @@ func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, 
 	locker.Unlock()
 }
 
-func enumerateSubdomains(domain string) []string {
+func enumerateSubdomains(domain string, timeOut int) []string {
 	fmt.Println(fmt.Sprintf("Enumerating subdomains for %s", domain))
 
 	sources_ := []sources.Source {
@@ -55,10 +57,14 @@ func enumerateSubdomains(domain string) []string {
 	for _, source := range sources_ {
 		waitGroup.Add(1)
 
-		go runSource(&waitGroup, source, domain, &locker, &subdomains)
+		go runSource(&waitGroup, source, domain, timeOut, &locker, &subdomains)
 	}
 
 	waitGroup.Wait()
+
+	subdomains = utils.RetainSpecificStrings(subdomains, fmt.Sprintf("[0-9a-z-.]+%s", domain))
+
+	subdomains = utils.RemoveDuplicatedStrings(subdomains)
 
 	sort.Strings(subdomains)
 
@@ -85,7 +91,7 @@ func Run(options SubOptions) {
 	var results []string
 
 	for _, domain := range domains {
-		result := enumerateSubdomains(domain)
+		result := enumerateSubdomains(domain, options.TimeOut)
 
 		utils.BufferedPrint(result)
 

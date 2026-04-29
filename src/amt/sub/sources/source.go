@@ -1,6 +1,6 @@
 package sources
 
 type Source interface {
-	Search(domain string) ([]string, error)
+	Search(domain string, timeOut int) ([]string, error)
 	GetName() string
 }

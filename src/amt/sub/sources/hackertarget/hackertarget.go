@@ -3,16 +3,21 @@ package hackertarget
 import (
 	"io"
 	"fmt"
+	"time"
 	"strings"
 	"net/http"
 )
 
 type HackerTarget struct {}
 
-func (h HackerTarget) Search(domain string) ([]string, error) {
+func (h HackerTarget) Search(domain string, timeOut int) ([]string, error) {
+	client := &http.Client {
+		Timeout: time.Duration(timeOut) * time.Second,
+	}
+
 	url := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", domain)
 
-	response, err := http.Get(url)
+	response, err := client.Get(url)
 
 	if err != nil {
 		return []string{}, err
