@@ -10,6 +10,7 @@ import (
 	"amt/utils"
 	"amt/sub/sources"
 	"amt/sub/sources/anubis_db"
+	"amt/sub/sources/cert_spotter"
 	"amt/sub/sources/hackertarget"
 )
 
@@ -45,6 +46,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 
 	sources_ := []sources.Source {
 		anubis_db.AnubisDB {},
+		cert_spotter.CertSpotter {},
 		hackertarget.HackerTarget {},
 	}
 
@@ -97,6 +99,8 @@ func Run(options SubOptions) {
 
 		results = append(results[:], result[:]...)
 	}
+
+	fmt.Println(fmt.Sprintf("%d subdomains was discovered", len(results)))
 
 	if options.Output != "" {
 		utils.WriteResults(options.Output, results)
