@@ -70,6 +70,24 @@ func Panic(err error) {
 	os.Exit(1)
 }
 
+func FindSpecificStrings(text string, expression string) []string {
+	regex, err := regexp.Compile(expression)
+
+	if err != nil {
+		Panic(err)
+	}
+
+	matches := regex.FindAllString(text, -1)
+
+	var result []string
+
+	for _, match := range matches {
+		result = append(result, match)
+	}
+
+	return result
+}
+
 func RemoveDuplicatedStrings(items []string) []string {
 	keys := make(map[string] bool)
 

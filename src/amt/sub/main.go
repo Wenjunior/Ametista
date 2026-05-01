@@ -10,6 +10,7 @@ import (
 	"amt/utils"
 	"amt/sub/sources"
 	"amt/sub/sources/myssl"
+	"amt/sub/sources/rapiddns"
 	"amt/sub/sources/anubis_db"
 	"amt/sub/sources/hudson_rock"
 	"amt/sub/sources/cert_spotter"
@@ -49,6 +50,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 
 	sources_ := []sources.Source {
 		myssl.MySSL {},
+		rapiddns.RapidDNS {},
 		anubis_db.AnubisDB {},
 		hudson_rock.HudsonRock {},
 		cert_spotter.CertSpotter {},
