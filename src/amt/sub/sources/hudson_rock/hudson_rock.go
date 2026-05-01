@@ -1,0 +1,64 @@
+package hudson_rock
+
+import (
+	"fmt"
+	"time"
+	"strings"
+	"net/http"
+	jsoniter "github.com/json-iterator/go"
+)
+
+type HudsonRock struct {}
+
+type responseData struct {
+	Data struct {
+		ClientsURLs[] struct {
+			URL string `json:"url"`
+		} `json:"clients_urls"`
+		EmployeesURLs[] struct {
+			URL string `json:"url"`
+		} `json:"employees_urls"`
+	} `json:"data"`
+}
+
+func (h HudsonRock) Search(domain string, timeOut int) ([]string, error) {
+	client := http.Client {
+		Timeout: time.Duration(timeOut) * time.Second,
+	}
+
+	url := fmt.Sprintf("https://cavalier.hudsonrock.com/api/json/v2/osint-tools/urls-by-domain?domain=%s", domain)
+
+	response, err := client.Get(url)
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	defer response.Body.Close()
+
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+
+	decoder := json.NewDecoder(response.Body)
+
+	var responseData responseData
+
+	err = decoder.Decode(&responseData)
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	var subdomains []string
+
+	for _, record := range append(responseData.Data.ClientsURLs, responseData.Data.EmployeesURLs...) {
+		subdomain := strings.Split(record.URL, "/")[2]
+
+		subdomains = append(subdomains, subdomain)
+	}
+
+	return subdomains, nil
+}
+
+func (h HudsonRock) GetName() string {
+	return "Hudson Rock"
+}

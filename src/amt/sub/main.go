@@ -10,6 +10,7 @@ import (
 	"amt/utils"
 	"amt/sub/sources"
 	"amt/sub/sources/anubis_db"
+	"amt/sub/sources/hudson_rock"
 	"amt/sub/sources/cert_spotter"
 	"amt/sub/sources/hackertarget"
 	"amt/sub/sources/certificate_search"
@@ -47,6 +48,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 
 	sources_ := []sources.Source {
 		anubis_db.AnubisDB {},
+		hudson_rock.HudsonRock {},
 		cert_spotter.CertSpotter {},
 		hackertarget.HackerTarget {},
 		certificate_search.CertificateSearch {},
