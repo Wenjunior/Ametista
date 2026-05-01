@@ -1,24 +1,26 @@
-package cert_spotter
+package certificate_search
 
 import (
 	"fmt"
 	"time"
+	"strings"
 	"net/http"
 	jsoniter "github.com/json-iterator/go"
 )
 
-type CertSpotter struct {}
+type CertificateSearch struct {}
 
 type certificateObj struct {
-	DNSNames []string `json:"dns_names"`
+	NameValue string `json:"name_value"`
+	CommonName string `json:"common_name"`
 }
 
-func (c CertSpotter) Search(domain string, timeOut int) ([]string, error) {
+func (c CertificateSearch) Search(domain string, timeOut int) ([]string, error) {
 	client := http.Client {
 		Timeout: time.Duration(timeOut) * time.Second,
 	}
 
-	url := fmt.Sprintf("https://api.certspotter.com/v1/issuances?domain=%s&include_subdomains=true&expand=dns_names", domain)
+	url := fmt.Sprintf("https://crt.sh/?q=%s&output=json", domain)
 
 	response, err := client.Get(url)
 
@@ -43,14 +45,22 @@ func (c CertSpotter) Search(domain string, timeOut int) ([]string, error) {
 	var subdomains []string
 
 	for _, certificate := range certificates {
-		for _, dnsName := range certificate.DNSNames {
-			subdomains = append(subdomains, dnsName)
+		commonName := certificate.CommonName
+
+		subdomains = append(subdomains, commonName)
+
+		nameValue := certificate.NameValue
+
+		values := strings.SplitSeq(nameValue, "\n")
+
+		for value := range values {
+			subdomains = append(subdomains, value)
 		}
 	}
 
 	return subdomains, nil
 }
 
-func (c CertSpotter) GetName() string {
-	return "Cert Spotter"
+func (c CertificateSearch) GetName() string {
+	return "Certificate Search"
 }

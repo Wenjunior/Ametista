@@ -12,6 +12,7 @@ import (
 	"amt/sub/sources/anubis_db"
 	"amt/sub/sources/cert_spotter"
 	"amt/sub/sources/hackertarget"
+	"amt/sub/sources/certificate_search"
 )
 
 type SubOptions struct {
@@ -29,7 +30,7 @@ func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, 
 	locker.Lock()
 
 	if err != nil {
-		utils.Eprintln(fmt.Sprintf("Could not search on %s", source.GetName()), utils.YELLOW)
+		utils.Eprintln(fmt.Sprintf("Could not search on %s: %s", source.GetName(), err.Error()), utils.YELLOW)
 
 		locker.Unlock()
 
@@ -48,6 +49,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 		anubis_db.AnubisDB {},
 		cert_spotter.CertSpotter {},
 		hackertarget.HackerTarget {},
+		certificate_search.CertificateSearch {},
 	}
 
 	var waitGroup sync.WaitGroup
@@ -64,7 +66,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 
 	waitGroup.Wait()
 
-	subdomains = utils.RetainSpecificStrings(subdomains, fmt.Sprintf("[0-9a-z-.]+%s", domain))
+	subdomains = utils.RetainSpecificStrings(subdomains, fmt.Sprintf("^[0-9a-z-.]+%s$", domain))
 
 	subdomains = utils.RemoveDuplicatedStrings(subdomains)
 
