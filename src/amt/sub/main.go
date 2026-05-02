@@ -48,7 +48,7 @@ func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, 
 func enumerateSubdomains(domain string, timeOut int) []string {
 	fmt.Println(fmt.Sprintf("Enumerating subdomains for %s", domain))
 
-	sources_ := []sources.Source {
+	sources := []sources.Source {
 		myssl.MySSL {},
 		rapiddns.RapidDNS {},
 		anubis_db.AnubisDB {},
@@ -64,7 +64,7 @@ func enumerateSubdomains(domain string, timeOut int) []string {
 
 	var subdomains []string
 
-	for _, source := range sources_ {
+	for _, source := range sources {
 		waitGroup.Add(1)
 
 		go runSource(&waitGroup, source, domain, timeOut, &locker, &subdomains)
