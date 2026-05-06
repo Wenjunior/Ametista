@@ -3,6 +3,7 @@ package scan
 import (
 	"fmt"
 	"errors"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -18,6 +19,7 @@ type ScanOptions struct {
 	FileName string
 	Targets []string
 	Patterns []string
+	Output string
 }
 
 func parsePatterns(patterns []string) []int {
@@ -77,11 +79,29 @@ func Run(options ScanOptions) {
 		}
 	}
 
+	if len(options.Patterns) == 0 {
+		// Source: https://exposure.shodan.io/#/
+
+		options.Patterns = []string{"21-22", "25", "53", "80", "110", "123", "143", "161", "179", "443", "465", "500", "541", "554", "587", "646", "888", "993", "1024", "1701", "1723", "1801", "1900", "2000", "2082-2083", "2087", "3306", "4567", "5001", "5060", "5353", "5683", "5985", "7170", "7547", "7676", "8008-8010", "8080-8081", "8085", "8089", "8159", "8291", "8443", "9000", "9080", "9100", "10443", "30005-30006", "37777", "49152", "49501-49502", "50001", "50080", "50805", "51005", "58000", "58603"}
+	}
+
 	ports := parsePatterns(options.Patterns)
+
+	if runtime.GOOS != "windows" {
+		utils.IncreaseUlimit(uint64(options.BatchSize))
+	}
 
 	scanner := scanner.Scanner {}
 
+	var results []string
+
 	for _, target := range targets {
-		scanner.Run(options.BatchSize, target, ports, options.TimeOut)
+		result := scanner.Run(options.BatchSize, target, ports, options.TimeOut)
+
+		results = append(results[:], result[:]...)
+	}
+
+	if options.Output != "" {
+		utils.WriteResults(options.Output, results)
 	}
 }

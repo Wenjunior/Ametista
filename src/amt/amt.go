@@ -59,11 +59,13 @@ func main() {
 
 	scan.Flags().StringVarP(&scanOptions.FileName, "list", "l", "", "File containing a list of target hosts/networks")
 
-	scan.Flags().StringSliceVarP(&scanOptions.Patterns, "ports", "p", []string{"21-23", "25", "80", "110", "443", "445", "3036", "8080", "8443"}, "Only scan specified ports")
+	scan.Flags().StringSliceVarP(&scanOptions.Patterns, "ports", "p", []string{}, "Only scan specified ports")
 
-	scan.Flags().IntVarP(&scanOptions.BatchSize, "batch-size", "b", 1024, "Set a batch size")
+	scan.Flags().IntVarP(&scanOptions.BatchSize, "batch-size", "b", 3000, "Set a batch size")
 
-	scan.Flags().IntVarP(&scanOptions.TimeOut, "timeout", "w", 3, "Set how many seconds it should wait")
+	scan.Flags().IntVarP(&scanOptions.TimeOut, "timeout", "T", 3, "Set how many seconds it should wait for a response")
+
+	scan.Flags().StringVarP(&scanOptions.Output, "output", "o", "", "File to write results to")
 
 	commands.AddCommand(scan)
 

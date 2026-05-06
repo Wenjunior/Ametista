@@ -10,5 +10,4 @@
 ## Scan
 
 - Adicionar suporte a CIDR e range de IPs
-- Checar e caso necessário aumentar o ulimit antes de iniciar a varredura
-- Adicionar a opção de salvar os resultados
+- Adicionar as técnicas TCP SYN (stealth) scan e UDP scan

@@ -22,40 +22,42 @@ func (s Scanner) isHostname(target string) bool {
 	return false
 }
 
-func (s Scanner) connectUsingTCP(ipAddress string, port int, timeOut int, locker *sync.Mutex, openPorts *[]int) {
+func (s Scanner) connectUsingTCP(ipAddress string, port int, timeOut int, locker *sync.Mutex, result *[]string) {
 	dialer := net.Dialer {
 		Timeout: time.Duration(timeOut) * time.Second,
 	}
 
-	connection, err := dialer.Dial("tcp", fmt.Sprintf("%s:%d", ipAddress, port))
+	host := fmt.Sprintf("%s:%d", ipAddress, port)
+
+	connection, err := dialer.Dial("tcp", host)
 
 	if err != nil {
 		return
 	}
 
-	defer connection.Close()
+	connection.Close()
 
 	locker.Lock()
 
 	fmt.Println(fmt.Sprintf("%d is open", port))
 
-	*openPorts = append(*openPorts, port)
+	*result = append(*result, host)
 
 	locker.Unlock()
 }
 
-func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) {
+func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) []string {
 	ipAddress := target
 
 	if s.isHostname(target) {
-		fmt.Println(fmt.Sprintf("Resolving %s ...", target))
+		fmt.Println(fmt.Sprintf("Resolving %s", target))
 
 		resolvedAddresses, err := net.LookupHost(target)
 
 		if err != nil {
-			utils.Eprintln(fmt.Sprintf("Could not resolve hostname", target), utils.YELLOW)
+			utils.Eprintln("Could not resolve hostname", utils.YELLOW)
 
-			return
+			return []string{}
 		}
 
 		ipAddress = resolvedAddresses[0]
@@ -67,7 +69,7 @@ func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) {
 
 	var locker sync.Mutex
 
-	var openPorts []int
+	var result []string
 
 	fmt.Println(fmt.Sprintf("Scanning: %s", ipAddress))
 
@@ -81,9 +83,11 @@ func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) {
 
 			defer func() { <- semaphore }()
 
-			s.connectUsingTCP(ipAddress, port, timeOut, &locker, &openPorts)
+			s.connectUsingTCP(ipAddress, port, timeOut, &locker, &result)
 		} ()
 	}
 
 	waitGroup.Wait()
+
+	return result
 }

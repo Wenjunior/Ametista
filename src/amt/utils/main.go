@@ -4,8 +4,9 @@ import (
 	"os"
 	"fmt"
 	"bufio"
+	"errors"
 	"regexp"
-	"strings"
+	"syscall"
 )
 
 // https://www.dolthub.com/blog/2024-02-23-colors-in-golang/
@@ -138,6 +139,36 @@ func BufferedPrint(items []string) {
 	writer.Flush()
 }
 
+func IncreaseUlimit(batchSize uint64) {
+	minimumUlimitValue := uint64(1024) // That's the default on most Unix-like operating systems
+
+	if batchSize < minimumUlimitValue {
+		Panic(errors.New("Batch size is too low"))
+	}
+
+	var rLimit syscall.Rlimit
+
+	err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+
+	if err != nil {
+		Panic(err)
+	}
+
+	if rLimit.Max >= batchSize {
+		return
+	}
+
+	rLimit.Cur = minimumUlimitValue
+
+	rLimit.Max = batchSize
+
+	err = syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit)
+
+	if err != nil {
+		Panic(err)
+	}
+}
+
 func WriteResults(fileName string, results []string) {
 	file, err := os.Create(fileName)
 
@@ -147,9 +178,13 @@ func WriteResults(fileName string, results []string) {
 
 	defer file.Close()
 
-	_, err = file.WriteString(strings.Join(results[:], "\n"))
+	for _, result := range results {
+		_, err = file.WriteString(fmt.Sprintf("%s\n", result))
 
-	if err != nil {
-		Panic(err)
+		if err != nil {
+			Panic(err)
+		}
 	}
+
+	file.Sync()
 }
