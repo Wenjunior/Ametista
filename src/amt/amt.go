@@ -7,6 +7,7 @@ import (
 import (
 	"amt/sub"
 	"amt/scan"
+	"amt/probe"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 
 	sub.Flags().StringVarP(&subOptions.FileName, "list", "l", "", "File containing a list of target root domain names")
 
-	sub.Flags().IntVarP(&subOptions.TimeOut, "timeout", "t", 10, "Set how many seconds it should wait for a response")
+	sub.Flags().IntVarP(&subOptions.Seconds, "timeout", "t", 10, "Set a timeout in seconds")
 
 	sub.Flags().StringVarP(&subOptions.Output, "output", "o", "", "File to write results to")
 
@@ -49,7 +50,7 @@ func main() {
 
 	scan := &cobra.Command {
 		Use: "scan",
-		Short: "TCP port scanner",
+		Short: "Simple TCP port scanner",
 		Run: func(command *cobra.Command, args []string) {
 			scan.Run(scanOptions)
 		},
@@ -63,11 +64,37 @@ func main() {
 
 	scan.Flags().IntVarP(&scanOptions.BatchSize, "batch-size", "b", 3000, "Set a batch size")
 
-	scan.Flags().IntVarP(&scanOptions.TimeOut, "timeout", "T", 3, "Set how many seconds it should wait for a response")
+	scan.Flags().IntVarP(&scanOptions.Seconds, "timeout", "w", 3, "Set a timeout in seconds")
 
 	scan.Flags().StringVarP(&scanOptions.Output, "output", "o", "", "File to write results to")
 
 	commands.AddCommand(scan)
+
+	probeOptions := probe.ProbeOptions {}
+
+	show := probe.Show {}
+
+	probe := &cobra.Command {
+		Use: "probe",
+		Short: "HTTP/HTTPS probing",
+		Run: func(command *cobra.Command, args []string) {
+			probe.Run(probeOptions, show)
+		},
+	}
+
+	probe.Flags().StringSliceVarP(&probeOptions.URLs, "urls", "u", []string{}, "Target URLs")
+
+	probe.Flags().StringVarP(&probeOptions.FileName, "list", "l", "", "File containing a list of target URLs")
+
+	probe.Flags().IntVarP(&probeOptions.BatchSize, "batch-size", "b", 3000, "Set a batch size")
+
+	probe.Flags().IntVarP(&probeOptions.Seconds, "timeout", "w", 3, "Set a timeout in seconds")
+
+	probe.Flags().BoolVarP(&show.StatusCode, "status-code", "s", false, "Show status code")
+
+	probe.Flags().BoolVarP(&show.ContentLength, "content-length", "c", false, "Show content length")
+
+	commands.AddCommand(probe)
 
 	commands.Execute()
 }

@@ -9,9 +9,9 @@ import (
 
 type AnubisDB struct {}
 
-func (a AnubisDB) Search(domain string, timeOut int) ([]string, error) {
+func (self AnubisDB) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://anubisdb.com/anubis/subdomains/%s", domain)
@@ -39,6 +39,6 @@ func (a AnubisDB) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (a AnubisDB) GetName() string {
+func (self AnubisDB) GetName() string {
 	return "AnubisDB"
 }

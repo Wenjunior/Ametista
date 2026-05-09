@@ -10,9 +10,9 @@ import (
 
 type HackerTarget struct {}
 
-func (h HackerTarget) Search(domain string, timeOut int) ([]string, error) {
+func (self HackerTarget) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := &http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", domain)
@@ -44,6 +44,6 @@ func (h HackerTarget) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (h HackerTarget) GetName() string {
+func (self HackerTarget) GetName() string {
 	return "HackerTarget"
 }

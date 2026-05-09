@@ -15,9 +15,9 @@ type certificatesObj struct {
 	} `json:"data"`
 }
 
-func (m MySSL) Search(domain string, timeOut int) ([]string, error) {
+func (self MySSL) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://myssl.com/api/v1/discover_sub_domain?domain=%s", domain)
@@ -53,6 +53,6 @@ func (m MySSL) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (m MySSL) GetName() string {
+func (self MySSL) GetName() string {
 	return "MySSL"
 }

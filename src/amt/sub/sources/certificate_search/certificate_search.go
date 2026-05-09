@@ -15,9 +15,9 @@ type certificateObj struct {
 	CommonName string `json:"common_name"`
 }
 
-func (c CertificateSearch) Search(domain string, timeOut int) ([]string, error) {
+func (self CertificateSearch) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://crt.sh/?q=%s&output=json", domain)
@@ -61,6 +61,6 @@ func (c CertificateSearch) Search(domain string, timeOut int) ([]string, error) 
 	return subdomains, nil
 }
 
-func (c CertificateSearch) GetName() string {
+func (self CertificateSearch) GetName() string {
 	return "Certificate Search"
 }

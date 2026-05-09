@@ -2,6 +2,8 @@ package scan
 
 import (
 	"fmt"
+	"net"
+	"time"
 	"errors"
 	"runtime"
 	"strconv"
@@ -14,7 +16,7 @@ import (
 )
 
 type ScanOptions struct {
-	TimeOut int
+	Seconds int
 	BatchSize int
 	FileName string
 	Targets []string
@@ -42,7 +44,7 @@ func parsePatterns(patterns []string) []int {
 			}
 
 			if firstNumber > lastNumber {
-				utils.Panic(errors.New(fmt.Sprintf("%s is greater than %s", firstNumber, lastNumber)))
+				utils.Panic(errors.New(fmt.Sprintf("%d is greater than %d", firstNumber, lastNumber)))
 			}
 
 			for port := firstNumber; port <= lastNumber; port++ {
@@ -62,6 +64,14 @@ func parsePatterns(patterns []string) []int {
 	return ports
 }
 
+func isHostname(target string) bool {
+	if !strings.Contains(target, ":") && strings.ContainsAny(target, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+		return true
+	}
+
+	return false
+}
+
 func Run(options ScanOptions) {
 	targets := options.Targets
 
@@ -69,7 +79,7 @@ func Run(options ScanOptions) {
 		lines, errChan := utils.ReadFile(options.FileName)
 
 		for line := range lines {
-			_ = append(targets, line)
+			targets = append(targets, line)
 		}
 
 		err := <- errChan
@@ -91,12 +101,30 @@ func Run(options ScanOptions) {
 		utils.IncreaseUlimit(uint64(options.BatchSize))
 	}
 
+	timeOut := time.Duration(options.Seconds) * time.Second
+
 	scanner := scanner.Scanner {}
 
 	var results []string
 
 	for _, target := range targets {
-		result := scanner.Run(options.BatchSize, target, ports, options.TimeOut)
+		ipAddress := target
+
+		if isHostname(target) {
+			fmt.Printf("Resolving %s\n", target)
+
+			resolvedAddresses, err := net.LookupHost(target)
+
+			if err != nil {
+				utils.Eprintln("Could not resolve hostname", utils.YELLOW)
+
+				continue
+			}
+
+			ipAddress = resolvedAddresses[0]
+		}
+
+		result := scanner.Run(options.BatchSize, ipAddress, ports, timeOut)
 
 		results = append(results[:], result[:]...)
 	}

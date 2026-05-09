@@ -13,9 +13,9 @@ import (
 
 type RapidDNS struct {}
 
-func (r RapidDNS) Search(domain string, timeOut int) ([]string, error) {
+func (self RapidDNS) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://rapiddns.io/subdomain/%s", domain)
@@ -41,6 +41,6 @@ func (r RapidDNS) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (r RapidDNS) GetName() string {
+func (self RapidDNS) GetName() string {
 	return "RapidDNS"
 }

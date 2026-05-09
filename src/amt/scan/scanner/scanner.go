@@ -5,26 +5,13 @@ import (
 	"net"
 	"sync"
 	"time"
-	"strings"
-)
-
-import (
-	"amt/utils"
 )
 
 type Scanner struct {}
 
-func (s Scanner) isHostname(target string) bool {
-	if !strings.Contains(target, ":") && strings.ContainsAny(target, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-		return true
-	}
-
-	return false
-}
-
-func (s Scanner) connectUsingTCP(ipAddress string, port int, timeOut int, locker *sync.Mutex, result *[]string) {
+func (self Scanner) scan(ipAddress string, port int, timeOut time.Duration, locker *sync.Mutex, results *[]string) {
 	dialer := net.Dialer {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	host := fmt.Sprintf("%s:%d", ipAddress, port)
@@ -35,33 +22,19 @@ func (s Scanner) connectUsingTCP(ipAddress string, port int, timeOut int, locker
 		return
 	}
 
-	connection.Close()
+	defer connection.Close()
 
 	locker.Lock()
 
-	fmt.Println(fmt.Sprintf("%d is open", port))
+	fmt.Printf("%d is open\n", port)
 
-	*result = append(*result, host)
+	*results = append(*results, host)
 
 	locker.Unlock()
 }
 
-func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) []string {
-	ipAddress := target
-
-	if s.isHostname(target) {
-		fmt.Println(fmt.Sprintf("Resolving %s", target))
-
-		resolvedAddresses, err := net.LookupHost(target)
-
-		if err != nil {
-			utils.Eprintln("Could not resolve hostname", utils.YELLOW)
-
-			return []string{}
-		}
-
-		ipAddress = resolvedAddresses[0]
-	}
+func (self Scanner) Run(batchSize int, ipAddress string, ports []int, timeOut time.Duration) []string {
+	fmt.Printf("Scanning: %s\n", ipAddress)
 
 	semaphore := make(chan struct{}, batchSize)
 
@@ -69,9 +42,7 @@ func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) []s
 
 	var locker sync.Mutex
 
-	var result []string
-
-	fmt.Println(fmt.Sprintf("Scanning: %s", ipAddress))
+	var results []string
 
 	for _, port := range ports {
 		semaphore <- struct{}{}
@@ -83,11 +54,11 @@ func (s Scanner) Run(batchSize int, target string, ports []int, timeOut int) []s
 
 			defer func() { <- semaphore }()
 
-			s.connectUsingTCP(ipAddress, port, timeOut, &locker, &result)
+			self.scan(ipAddress, port, timeOut, &locker, &results)
 		} ()
 	}
 
 	waitGroup.Wait()
 
-	return result
+	return results
 }

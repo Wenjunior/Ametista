@@ -13,9 +13,9 @@ type certificateObj struct {
 	DNSNames []string `json:"dns_names"`
 }
 
-func (c CertSpotter) Search(domain string, timeOut int) ([]string, error) {
+func (self CertSpotter) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://api.certspotter.com/v1/issuances?domain=%s&include_subdomains=true&expand=dns_names", domain)
@@ -51,6 +51,6 @@ func (c CertSpotter) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (c CertSpotter) GetName() string {
+func (self CertSpotter) GetName() string {
 	return "Cert Spotter"
 }

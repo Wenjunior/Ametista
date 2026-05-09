@@ -21,9 +21,9 @@ type responseData struct {
 	} `json:"data"`
 }
 
-func (h HudsonRock) Search(domain string, timeOut int) ([]string, error) {
+func (self HudsonRock) Search(domain string, timeOut time.Duration) ([]string, error) {
 	client := http.Client {
-		Timeout: time.Duration(timeOut) * time.Second,
+		Timeout: timeOut,
 	}
 
 	url := fmt.Sprintf("https://cavalier.hudsonrock.com/api/json/v2/osint-tools/urls-by-domain?domain=%s", domain)
@@ -59,6 +59,6 @@ func (h HudsonRock) Search(domain string, timeOut int) ([]string, error) {
 	return subdomains, nil
 }
 
-func (h HudsonRock) GetName() string {
+func (self HudsonRock) GetName() string {
 	return "Hudson Rock"
 }

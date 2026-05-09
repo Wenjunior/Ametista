@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+	"time"
 )
 
 import (
@@ -21,11 +22,11 @@ import (
 type SubOptions struct {
 	Domains []string
 	FileName string
-	TimeOut int
+	Seconds int
 	Output string
 }
 
-func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, timeOut int, locker *sync.Mutex, foundSubdomains *[]string) {
+func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, timeOut time.Duration, locker *sync.Mutex, foundSubdomains *[]string) {
 	defer waitGroup.Done()
 
 	subdomains, err := source.Search(domain, timeOut)
@@ -45,8 +46,8 @@ func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, 
 	locker.Unlock()
 }
 
-func enumerateSubdomains(domain string, timeOut int) []string {
-	fmt.Println(fmt.Sprintf("Enumerating subdomains for %s", domain))
+func enumerateSubdomains(domain string, timeOut time.Duration) []string {
+	fmt.Printf("Enumerating subdomains for %s\n", domain)
 
 	sources := []sources.Source {
 		myssl.MySSL {},
@@ -88,7 +89,7 @@ func Run(options SubOptions) {
 		lines, errChan := utils.ReadFile(options.FileName)
 
 		for line := range lines {
-			_ = append(domains, line)
+			domains = append(domains, line)
 		}
 
 		err := <- errChan
@@ -98,17 +99,19 @@ func Run(options SubOptions) {
 		}
 	}
 
+	timeOut := time.Duration(options.Seconds) * time.Second
+
 	var results []string
 
 	for _, domain := range domains {
-		result := enumerateSubdomains(domain, options.TimeOut)
+		result := enumerateSubdomains(domain, timeOut)
 
 		utils.BufferedPrint(result)
 
 		results = append(results[:], result[:]...)
 	}
 
-	fmt.Println(fmt.Sprintf("%d subdomains was discovered", len(results)))
+	fmt.Printf("%d subdomains was discovered\n", len(results))
 
 	if options.Output != "" {
 		utils.WriteResults(options.Output, results)

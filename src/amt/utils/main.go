@@ -59,9 +59,7 @@ func ReadFile(fileName string) (<-chan string, <-chan error) {
 }
 
 func Eprintln(err string, color string) {
-	msg := fmt.Sprintf("%s%s%s\n", color, err, RESET)
-
-	fmt.Fprintf(os.Stderr, msg)
+	fmt.Fprintf(os.Stderr, "%s%s%s\n", color, err, RESET)
 }
 
 // I known that panic already exists, but it don't like debug info being showed to the final user.
@@ -72,13 +70,13 @@ func Panic(err error) {
 }
 
 func FindSpecificStrings(text string, expression string) []string {
-	regex, err := regexp.Compile(expression)
+	pattern, err := regexp.Compile(expression)
 
 	if err != nil {
 		Panic(err)
 	}
 
-	matches := regex.FindAllString(text, -1)
+	matches := pattern.FindAllString(text, -1)
 
 	var result []string
 
@@ -108,7 +106,7 @@ func RemoveDuplicatedStrings(items []string) []string {
 }
 
 func RetainSpecificStrings(items []string, expression string) []string {
-	regex, err := regexp.Compile(expression)
+	pattern, err := regexp.Compile(expression)
 
 	if err != nil {
 		Panic(err)
@@ -117,7 +115,7 @@ func RetainSpecificStrings(items []string, expression string) []string {
 	var result []string
 
 	for _, item := range items {
-		if regex.MatchString(item) {
+		if pattern.MatchString(item) {
 			result = append(result, item)
 		}
 	}
