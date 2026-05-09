@@ -1,10 +1,12 @@
 package certificate_search
 
 import (
-	"fmt"
 	"time"
 	"strings"
 	"net/http"
+)
+
+import (
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -20,7 +22,7 @@ func (self CertificateSearch) Search(domain string, timeOut time.Duration) ([]st
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://crt.sh/?q=%s&output=json", domain)
+	url := "https://crt.sh/?q=" + domain + "&output=json"
 
 	response, err := client.Get(url)
 

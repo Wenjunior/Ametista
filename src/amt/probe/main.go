@@ -11,7 +11,9 @@ import (
 )
 
 import (
-	"amt/utils"
+	"amt/utils/unix"
+	"amt/utils/print"
+	"amt/utils/filesystem"
 )
 
 type ProbeOptions struct {
@@ -90,7 +92,7 @@ func Run(options ProbeOptions, show Show) {
 	urls := options.URLs
 
 	if options.FileName != "" {
-		lines, errChan := utils.ReadFile(options.FileName)
+		lines, errChan := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			urls = append(urls, line)
@@ -99,14 +101,14 @@ func Run(options ProbeOptions, show Show) {
 		err := <- errChan
 
 		if err != nil {
-			utils.Panic(err)
+			print.Panic(err)
 		}
 	}
 
 	timeOut := time.Duration(options.Seconds) * time.Second
 
 	if runtime.GOOS != "windows" {
-		utils.IncreaseUlimit(uint64(options.BatchSize))
+		unix.IncreaseUlimit(uint64(options.BatchSize))
 	}
 
 	semaphore := make(chan struct{}, options.BatchSize)

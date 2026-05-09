@@ -4,15 +4,19 @@ import (
 	"fmt"
 	"net"
 	"time"
-	"errors"
 	"runtime"
 	"strconv"
 	"strings"
 )
 
 import (
-	"amt/utils"
 	"amt/scan/scanner"
+)
+
+import (
+	"amt/utils/unix"
+	"amt/utils/print"
+	"amt/utils/filesystem"
 )
 
 type ScanOptions struct {
@@ -34,17 +38,17 @@ func parsePatterns(patterns []string) []int {
 			firstNumber, err := strconv.Atoi(parts[0])
 
 			if err != nil {
-				utils.Panic(err)
+				print.Panic(err)
 			}
 
 			lastNumber, err := strconv.Atoi(parts[1])
 
 			if err != nil {
-				utils.Panic(err)
+				print.Panic(err)
 			}
 
 			if firstNumber > lastNumber {
-				utils.Panic(errors.New(fmt.Sprintf("%d is greater than %d", firstNumber, lastNumber)))
+				print.Panic(fmt.Errorf("%d is greater than %d", firstNumber, lastNumber))
 			}
 
 			for port := firstNumber; port <= lastNumber; port++ {
@@ -54,7 +58,7 @@ func parsePatterns(patterns []string) []int {
 			port, err := strconv.Atoi(pattern)
 
 			if err != nil {
-				utils.Panic(err)
+				print.Panic(err)
 			}
 
 			ports = append(ports, port)
@@ -76,7 +80,7 @@ func Run(options ScanOptions) {
 	targets := options.Targets
 
 	if options.FileName != "" {
-		lines, errChan := utils.ReadFile(options.FileName)
+		lines, errChan := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			targets = append(targets, line)
@@ -85,7 +89,7 @@ func Run(options ScanOptions) {
 		err := <- errChan
 
 		if err != nil {
-			utils.Panic(err)
+			print.Panic(err)
 		}
 	}
 
@@ -98,7 +102,7 @@ func Run(options ScanOptions) {
 	ports := parsePatterns(options.Patterns)
 
 	if runtime.GOOS != "windows" {
-		utils.IncreaseUlimit(uint64(options.BatchSize))
+		unix.IncreaseUlimit(uint64(options.BatchSize))
 	}
 
 	timeOut := time.Duration(options.Seconds) * time.Second
@@ -116,7 +120,7 @@ func Run(options ScanOptions) {
 			resolvedAddresses, err := net.LookupHost(target)
 
 			if err != nil {
-				utils.Eprintln("Could not resolve hostname", utils.YELLOW)
+				print.Eprintln("Could not resolve hostname")
 
 				continue
 			}
@@ -130,6 +134,6 @@ func Run(options ScanOptions) {
 	}
 
 	if options.Output != "" {
-		utils.WriteResults(options.Output, results)
+		filesystem.WriteResults(options.Output, results)
 	}
 }

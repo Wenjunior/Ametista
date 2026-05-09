@@ -1,9 +1,11 @@
 package cert_spotter
 
 import (
-	"fmt"
 	"time"
 	"net/http"
+)
+
+import (
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -18,7 +20,7 @@ func (self CertSpotter) Search(domain string, timeOut time.Duration) ([]string, 
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://api.certspotter.com/v1/issuances?domain=%s&include_subdomains=true&expand=dns_names", domain)
+	url := "https://api.certspotter.com/v1/issuances?domain=" + domain + "&include_subdomains=true&expand=dns_names"
 
 	response, err := client.Get(url)
 
@@ -43,9 +45,7 @@ func (self CertSpotter) Search(domain string, timeOut time.Duration) ([]string, 
 	var subdomains []string
 
 	for _, certificate := range certificates {
-		for _, dnsName := range certificate.DNSNames {
-			subdomains = append(subdomains, dnsName)
-		}
+		subdomains = append(subdomains, certificate.DNSNames...)
 	}
 
 	return subdomains, nil

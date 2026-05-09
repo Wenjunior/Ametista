@@ -1,10 +1,12 @@
 package hudson_rock
 
 import (
-	"fmt"
 	"time"
 	"strings"
 	"net/http"
+)
+
+import (
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -26,7 +28,7 @@ func (self HudsonRock) Search(domain string, timeOut time.Duration) ([]string, e
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://cavalier.hudsonrock.com/api/json/v2/osint-tools/urls-by-domain?domain=%s", domain)
+	url := "https://cavalier.hudsonrock.com/api/json/v2/osint-tools/urls-by-domain?domain=" + domain
 
 	response, err := client.Get(url)
 

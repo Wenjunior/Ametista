@@ -9,11 +9,7 @@
 
 ## Scan
 
+- Checar se os números estão entre 0 e 65536
 - Embaralhar a ordem das portas antes de escanear
 - Adicionar suporte a CIDR e range de IPs
 - Adicionar as técnicas TCP SYN (stealth) scan e UDP scan
-
-## Geral
-
-- Organizar utils.go
-- Analisar o código com um linter

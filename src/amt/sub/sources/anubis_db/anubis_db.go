@@ -1,9 +1,11 @@
 package anubis_db
 
 import (
-	"fmt"
 	"time"
 	"net/http"
+)
+
+import (
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -14,7 +16,7 @@ func (self AnubisDB) Search(domain string, timeOut time.Duration) ([]string, err
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://anubisdb.com/anubis/subdomains/%s", domain)
+	url := "https://anubisdb.com/anubis/subdomains/" + domain
 
 	response, err := client.Get(url)
 

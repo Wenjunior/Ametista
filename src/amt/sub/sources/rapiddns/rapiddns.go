@@ -2,13 +2,12 @@ package rapiddns
 
 import (
 	"io"
-	"fmt"
 	"time"
 	"net/http"
 )
 
 import (
-	"amt/utils"
+	"amt/utils/strutils"
 )
 
 type RapidDNS struct {}
@@ -18,7 +17,7 @@ func (self RapidDNS) Search(domain string, timeOut time.Duration) ([]string, err
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://rapiddns.io/subdomain/%s", domain)
+	url := "https://rapiddns.io/subdomain/" + domain
 
 	response, err := client.Get(url)
 
@@ -34,9 +33,9 @@ func (self RapidDNS) Search(domain string, timeOut time.Duration) ([]string, err
 		return []string{}, err
 	}
 
-	expression := fmt.Sprintf("[0-9a-z-.]+%s", domain)
+	expression := "[0-9a-z-.]+" + domain
 
-	subdomains := utils.FindSpecificStrings(string(body), expression)
+	subdomains := strutils.FindAll(string(body), expression)
 
 	return subdomains, nil
 }

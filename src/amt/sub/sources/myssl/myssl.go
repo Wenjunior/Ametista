@@ -1,9 +1,11 @@
 package myssl
 
 import (
-	"fmt"
 	"time"
 	"net/http"
+)
+
+import (
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -20,7 +22,7 @@ func (self MySSL) Search(domain string, timeOut time.Duration) ([]string, error)
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://myssl.com/api/v1/discover_sub_domain?domain=%s", domain)
+	url := "https://myssl.com/api/v1/discover_sub_domain?domain=" + domain
 
 	response, err := client.Get(url)
 

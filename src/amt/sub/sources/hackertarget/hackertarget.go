@@ -2,7 +2,6 @@ package hackertarget
 
 import (
 	"io"
-	"fmt"
 	"time"
 	"strings"
 	"net/http"
@@ -15,7 +14,7 @@ func (self HackerTarget) Search(domain string, timeOut time.Duration) ([]string,
 		Timeout: timeOut,
 	}
 
-	url := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", domain)
+	url := "https://api.hackertarget.com/hostsearch/?q=" + domain
 
 	response, err := client.Get(url)
 

@@ -8,7 +8,12 @@ import (
 )
 
 import (
-	"amt/utils"
+	"amt/utils/print"
+	"amt/utils/strutils"
+	"amt/utils/filesystem"
+)
+
+import (
 	"amt/sub/sources"
 	"amt/sub/sources/myssl"
 	"amt/sub/sources/rapiddns"
@@ -34,7 +39,7 @@ func runSource(waitGroup *sync.WaitGroup, source sources.Source, domain string, 
 	locker.Lock()
 
 	if err != nil {
-		utils.Eprintln(fmt.Sprintf("Could not search on %s: %s", source.GetName(), err.Error()), utils.YELLOW)
+		print.Eprintln("Could not search on " + source.GetName() + ": " + err.Error())
 
 		locker.Unlock()
 
@@ -73,9 +78,9 @@ func enumerateSubdomains(domain string, timeOut time.Duration) []string {
 
 	waitGroup.Wait()
 
-	subdomains = utils.RetainSpecificStrings(subdomains, fmt.Sprintf("^[0-9a-z-.]+%s$", domain))
+	subdomains = strutils.Retain(subdomains, "^[0-9a-z-.]+" + domain + "$")
 
-	subdomains = utils.RemoveDuplicatedStrings(subdomains)
+	subdomains = strutils.RemoveDuplicated(subdomains)
 
 	sort.Strings(subdomains)
 
@@ -86,7 +91,7 @@ func Run(options SubOptions) {
 	domains := options.Domains
 
 	if options.FileName != "" {
-		lines, errChan := utils.ReadFile(options.FileName)
+		lines, errChan := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			domains = append(domains, line)
@@ -95,7 +100,7 @@ func Run(options SubOptions) {
 		err := <- errChan
 
 		if err != nil {
-			utils.Panic(err)
+			print.Panic(err)
 		}
 	}
 
@@ -106,7 +111,7 @@ func Run(options SubOptions) {
 	for _, domain := range domains {
 		result := enumerateSubdomains(domain, timeOut)
 
-		utils.BufferedPrint(result)
+		print.BufferedPrint(result)
 
 		results = append(results[:], result[:]...)
 	}
@@ -114,6 +119,6 @@ func Run(options SubOptions) {
 	fmt.Printf("%d subdomains was discovered\n", len(results))
 
 	if options.Output != "" {
-		utils.WriteResults(options.Output, results)
+		filesystem.WriteResults(options.Output, results)
 	}
 }
