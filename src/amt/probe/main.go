@@ -12,7 +12,6 @@ import (
 
 import (
 	"amt/utils/unix"
-	"amt/utils/print"
 	"amt/utils/filesystem"
 )
 
@@ -92,16 +91,10 @@ func Run(options ProbeOptions, show Show) {
 	urls := options.URLs
 
 	if options.FileName != "" {
-		lines, errChan := filesystem.ReadFile(options.FileName)
+		lines := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			urls = append(urls, line)
-		}
-
-		err := <- errChan
-
-		if err != nil {
-			print.Panic(err)
 		}
 	}
 

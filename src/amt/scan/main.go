@@ -38,13 +38,13 @@ func parsePatterns(patterns []string) []int {
 			firstNumber, err := strconv.Atoi(parts[0])
 
 			if err != nil {
-				print.Panic(err)
+				print.Panic(fmt.Errorf("Could not convert %s: %s", parts[0], err.Error()))
 			}
 
 			lastNumber, err := strconv.Atoi(parts[1])
 
 			if err != nil {
-				print.Panic(err)
+				print.Panic(fmt.Errorf("Could not convert %s: %s", parts[1], err.Error()))
 			}
 
 			if firstNumber > lastNumber {
@@ -58,7 +58,7 @@ func parsePatterns(patterns []string) []int {
 			port, err := strconv.Atoi(pattern)
 
 			if err != nil {
-				print.Panic(err)
+				print.Panic(fmt.Errorf("Could not convert %s: %s", pattern, err.Error()))
 			}
 
 			ports = append(ports, port)
@@ -80,16 +80,10 @@ func Run(options ScanOptions) {
 	targets := options.Targets
 
 	if options.FileName != "" {
-		lines, errChan := filesystem.ReadFile(options.FileName)
+		lines := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			targets = append(targets, line)
-		}
-
-		err := <- errChan
-
-		if err != nil {
-			print.Panic(err)
 		}
 	}
 

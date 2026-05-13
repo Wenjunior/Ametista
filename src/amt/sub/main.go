@@ -91,16 +91,10 @@ func Run(options SubOptions) {
 	domains := options.Domains
 
 	if options.FileName != "" {
-		lines, errChan := filesystem.ReadFile(options.FileName)
+		lines := filesystem.ReadFile(options.FileName)
 
 		for line := range lines {
 			domains = append(domains, line)
-		}
-
-		err := <- errChan
-
-		if err != nil {
-			print.Panic(err)
 		}
 	}
 
