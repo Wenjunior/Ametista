@@ -37,3 +37,7 @@ func BufferedPrint(items []string) {
 
 	writer.Flush()
 }
+
+func Cprintln(msg string, color string) {
+	fmt.Printf("%s%s%s\n", color, msg, colors.RESET)
+}

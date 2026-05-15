@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+import (
+	"amt/utils/print"
+	"amt/utils/colors"
+)
+
 type Scanner struct {}
 
 func (self Scanner) scan(ipAddress string, port int, timeOut time.Duration, locker *sync.Mutex, results *[]string) {
@@ -26,7 +31,7 @@ func (self Scanner) scan(ipAddress string, port int, timeOut time.Duration, lock
 
 	locker.Lock()
 
-	fmt.Printf("%d is open\n", port)
+	print.Cprintln(fmt.Sprintf("%d is open", port), colors.GREEN)
 
 	*results = append(*results, host)
 

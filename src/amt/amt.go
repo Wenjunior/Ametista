@@ -94,7 +94,7 @@ func main() {
 
 	probe.Flags().BoolVarP(&show.Server, "server", "S", false, "Show Server header")
 
-	probe.Flags().BoolVarP(&show.XPoweredBy, "xpoweredby", "x", false, "Show X-Powered-By header")
+	probe.Flags().BoolVarP(&show.XPoweredBy, "x-powered-by", "x", false, "Show X-Powered-By header")
 
 	probe.Flags().BoolVarP(&show.Location, "location", "L", false, "Show Location header")
 

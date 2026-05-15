@@ -39,43 +39,13 @@ type Show struct {
 	Title bool
 }
 
-func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show, results *[]string) {
-	client := http.Client {
-		Timeout: timeOut,
-	}
-
-	alreadyFallback := false
-
-	var response *http.Response
-
-	for count := 0; count < 2; count++ {
-		var err error
-
-		response, err = client.Get(url)
-
-		if err == nil {
-			break
-		}
-
-		if strings.Contains(err.Error(), "connection refused") && !alreadyFallback {
-			url, _ = strings.CutPrefix(url, "https://")
-
-			url = "http://" + url
-
-			alreadyFallback = true
-
-			continue
-		}
-
-		return
-	}
-
-	locker.Lock()
-
+func buildResult(url string, show Show, response *http.Response, results *[]string) string {
 	result := url
 
 	if show.StatusCode {
-		result = fmt.Sprintf("%s [%d]", result, response.StatusCode)
+		statusCode := response.StatusCode
+
+		result = fmt.Sprintf("%s [%d]", result, statusCode)
 	}
 
 	if show.Server {
@@ -129,6 +99,44 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 			result = fmt.Sprintf("%s [%s]", result, title)
 		}
 	}
+
+	return result
+}
+
+func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show, results *[]string) {
+	client := http.Client {
+		Timeout: timeOut,
+	}
+
+	alreadyFallback := false
+
+	var response *http.Response
+
+	for count := 0; count < 2; count++ {
+		var err error
+
+		response, err = client.Get(url)
+
+		if err == nil {
+			break
+		}
+
+		if strings.Contains(err.Error(), "connection refused") && !alreadyFallback {
+			url, _ = strings.CutPrefix(url, "https://")
+
+			url = "http://" + url
+
+			alreadyFallback = true
+
+			continue
+		}
+
+		return
+	}
+
+	locker.Lock()
+
+	result := buildResult(url, show, response, results)
 
 	fmt.Println(result)
 
