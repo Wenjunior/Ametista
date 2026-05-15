@@ -92,7 +92,19 @@ func main() {
 
 	probe.Flags().BoolVarP(&show.StatusCode, "status-code", "s", false, "Show status code")
 
+	probe.Flags().BoolVarP(&show.Server, "server", "S", false, "Show Server header")
+
+	probe.Flags().BoolVarP(&show.XPoweredBy, "xpoweredby", "x", false, "Show X-Powered-By header")
+
+	probe.Flags().BoolVarP(&show.Location, "location", "L", false, "Show Location header")
+
 	probe.Flags().BoolVarP(&show.ContentLength, "content-length", "c", false, "Show content length")
+
+	probe.Flags().BoolVarP(&show.ContentType, "content-type", "C", false, "Show Content-Type")
+
+	probe.Flags().BoolVarP(&show.Title, "title", "t", false, "Show page title")
+
+	probe.Flags().StringVarP(&probeOptions.Output, "output", "o", "", "File to write results to")
 
 	commands.AddCommand(probe)
 

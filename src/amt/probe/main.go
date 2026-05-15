@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"io"
 	"fmt"
 	"time"
 	"sync"
@@ -8,6 +9,11 @@ import (
 	"strings"
 	"net/http"
 	"net/http/httputil"
+)
+
+import (
+	"github.com/dlclark/regexp2/v2"
+	"github.com/dlclark/regexp2/v2/compat"
 )
 
 import (
@@ -20,14 +26,20 @@ type ProbeOptions struct {
 	FileName string
 	Seconds int
 	BatchSize int
+	Output string
 }
 
 type Show struct {
 	StatusCode bool
+	Server bool
+	XPoweredBy bool
+	Location bool
 	ContentLength bool
+	ContentType bool
+	Title bool
 }
 
-func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show) {
+func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show, results *[]string) {
 	client := http.Client {
 		Timeout: timeOut,
 	}
@@ -60,10 +72,28 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show)
 
 	locker.Lock()
 
-	fmt.Print(url)
+	result := url
 
 	if show.StatusCode {
-		fmt.Printf(" [%d]", response.StatusCode)
+		result = fmt.Sprintf("%s [%d]", result, response.StatusCode)
+	}
+
+	if show.Server {
+		server := response.Header.Get("Server")
+
+		result = fmt.Sprintf("%s [%s]", result, server)
+	}
+
+	if show.XPoweredBy {
+		xPoweredBy := response.Header.Get("X-Powered-By")
+
+		result = fmt.Sprintf("%s [%s]", result, xPoweredBy)
+	}
+
+	if show.Location {
+		location := response.Header.Get("Location")
+
+		result = fmt.Sprintf("%s [%s]", result, location)
 	}
 
 	if show.ContentLength {
@@ -78,11 +108,31 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show)
 		}
 
 		if contentLength != -1 {
-			fmt.Printf(" [%d]", contentLength)
+			result = fmt.Sprintf("%s [%d]", result, contentLength)
 		}
 	}
 
-	fmt.Println()
+	if show.ContentType {
+		contentType := response.Header.Get("Content-Type")
+
+		result = fmt.Sprintf("%s [%s]", result, contentType)
+	}
+
+	if show.Title {
+		body, err := io.ReadAll(response.Body)
+
+		if err == nil {
+			pattern := compat.MustCompile("(?<=<title>)(.*)(?=<\\/title>)", regexp2.RE2)
+
+			title := pattern.FindString(string(body))
+
+			result = fmt.Sprintf("%s [%s]", result, title)
+		}
+	}
+
+	fmt.Println(result)
+
+	*results = append(*results, result)
 
 	locker.Unlock()
 }
@@ -110,6 +160,8 @@ func Run(options ProbeOptions, show Show) {
 
 	var locker sync.Mutex
 
+	var results []string
+
 	for _, url := range urls {
 		semaphore <- struct{}{}
 
@@ -124,9 +176,13 @@ func Run(options ProbeOptions, show Show) {
 				url = "https://" + url
 			}
 
-			sendProbe(url, timeOut, &locker, show)
+			sendProbe(url, timeOut, &locker, show, &results)
 		} ()
 	}
 
 	waitGroup.Wait()
+
+	if options.Output != "" {
+		filesystem.WriteResults(options.Output, results)
+	}
 }
