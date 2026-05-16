@@ -19,12 +19,12 @@ import (
 	"amt/utils/filesystem"
 )
 
-type ScanOptions struct {
+type Options struct {
 	Seconds int
 	BatchSize int
 	FileName string
-	Targets []string
-	Patterns []string
+	Target string
+	Patterns string
 	Output string
 }
 
@@ -76,8 +76,8 @@ func isHostname(target string) bool {
 	return false
 }
 
-func Run(options ScanOptions) {
-	targets := options.Targets
+func Run(options Options) {
+	targets := []string{options.Target}
 
 	if options.FileName != "" {
 		lines := filesystem.ReadFile(options.FileName)
@@ -87,13 +87,15 @@ func Run(options ScanOptions) {
 		}
 	}
 
-	if len(options.Patterns) == 0 {
+	patterns := strings.Split(options.Patterns, ",")
+
+	if len(patterns) == 1 {
 		// Source: https://exposure.shodan.io/#/
 
-		options.Patterns = []string{"21-22", "25", "53", "80", "110", "123", "143", "161", "179", "443", "465", "500", "541", "554", "587", "646", "888", "993", "1024", "1701", "1723", "1801", "1900", "2000", "2082-2083", "2087", "3306", "4567", "5001", "5060", "5353", "5683", "5985", "7170", "7547", "7676", "8008-8010", "8080-8081", "8085", "8089", "8159", "8291", "8443", "9000", "9080", "9100", "10443", "30005-30006", "37777", "49152", "49501-49502", "50001", "50080", "50805", "51005", "58000", "58603"}
+		patterns = []string{"21-22", "25", "53", "80", "110", "123", "143", "161", "179", "443", "465", "500", "541", "554", "587", "646", "888", "993", "1024", "1701", "1723", "1801", "1900", "2000", "2082-2083", "2087", "3306", "4567", "5001", "5060", "5353", "5683", "5985", "7170", "7547", "7676", "8008-8010", "8080-8081", "8085", "8089", "8159", "8291", "8443", "9000", "9080", "9100", "10443", "30005-30006", "37777", "49152", "49501-49502", "50001", "50080", "50805", "51005", "58000", "58603"}
 	}
 
-	ports := parsePatterns(options.Patterns)
+	ports := parsePatterns(patterns)
 
 	if runtime.GOOS != "windows" {
 		unix.IncreaseUlimit(uint64(options.BatchSize))
@@ -106,6 +108,10 @@ func Run(options ScanOptions) {
 	var results []string
 
 	for _, target := range targets {
+		if len(target) == 0 {
+			continue
+		}
+
 		ipAddress := target
 
 		if isHostname(target) {

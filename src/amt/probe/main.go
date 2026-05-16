@@ -21,8 +21,8 @@ import (
 	"amt/utils/filesystem"
 )
 
-type ProbeOptions struct {
-	URLs []string
+type Options struct {
+	URL string
 	FileName string
 	Seconds int
 	BatchSize int
@@ -145,8 +145,8 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 	locker.Unlock()
 }
 
-func Run(options ProbeOptions, show Show) {
-	urls := options.URLs
+func Run(options Options, show Show) {
+	urls := []string{options.URL}
 
 	if options.FileName != "" {
 		lines := filesystem.ReadFile(options.FileName)
@@ -171,6 +171,10 @@ func Run(options ProbeOptions, show Show) {
 	var results []string
 
 	for _, url := range urls {
+		if len(url) == 0 {
+			continue
+		}
+
 		semaphore <- struct{}{}
 
 		waitGroup.Add(1)

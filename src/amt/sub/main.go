@@ -24,8 +24,8 @@ import (
 	"amt/sub/sources/certificate_search"
 )
 
-type SubOptions struct {
-	Domains []string
+type Options struct {
+	Domain string
 	FileName string
 	Seconds int
 	Output string
@@ -87,8 +87,8 @@ func enumerateSubdomains(domain string, timeOut time.Duration) []string {
 	return subdomains
 }
 
-func Run(options SubOptions) {
-	domains := options.Domains
+func Run(options Options) {
+	domains := []string{options.Domain}
 
 	if options.FileName != "" {
 		lines := filesystem.ReadFile(options.FileName)
@@ -103,6 +103,10 @@ func Run(options SubOptions) {
 	var results []string
 
 	for _, domain := range domains {
+		if len(domain) == 0 {
+			continue
+		}
+
 		result := enumerateSubdomains(domain, timeOut)
 
 		print.BufferedPrint(result)

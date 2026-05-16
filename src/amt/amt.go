@@ -1,112 +1,102 @@
 package main
 
 import (
-	"github.com/spf13/cobra"
+	"os"
+	"fmt"
+	"flag"
+	"errors"
 )
 
 import (
 	"amt/sub"
 	"amt/scan"
 	"amt/probe"
+	"amt/utils/print"
 )
 
 func main() {
-	commands := &cobra.Command {
-		Short: "Reconnaissance tool",
-	}
+	subCommand := flag.NewFlagSet("sub", flag.ExitOnError)
 
-	commands.PersistentFlags().BoolP("help", "h", false, "")
+	subOptions := sub.Options {}
 
-	commands.PersistentFlags().Lookup("help").Hidden = true
+	subCommand.StringVar(&subOptions.Domain, "d", "", "Target root domain name")
 
-	commands.SetHelpCommand(&cobra.Command {
-		Use: "no-help",
-		Hidden: true,
-	})
+	subCommand.StringVar(&subOptions.FileName, "l", "", "File containing a list of target root domain names")
 
-	commands.CompletionOptions.DisableDefaultCmd = true
+	subCommand.IntVar(&subOptions.Seconds, "t", 10, "Set a timeout in seconds")
 
-	subOptions := sub.SubOptions {}
+	subCommand.StringVar(&subOptions.Output, "o", "", "File to write results to")
 
-	sub := &cobra.Command {
-		Use: "sub",
-		Short: "Passive subdomain enumeration",
-		Run: func(command *cobra.Command, args []string) {
-			sub.Run(subOptions)
-		},
-	}
+	scanCommand := flag.NewFlagSet("scan", flag.ExitOnError)
 
-	sub.Flags().StringSliceVarP(&subOptions.Domains, "domains", "d", []string{}, "Target root domain names")
+	scanOptions := scan.Options {}
 
-	sub.Flags().StringVarP(&subOptions.FileName, "list", "l", "", "File containing a list of target root domain names")
+	scanCommand.StringVar(&scanOptions.Target, "t", "", "Target host")
 
-	sub.Flags().IntVarP(&subOptions.Seconds, "timeout", "t", 10, "Set a timeout in seconds")
+	scanCommand.StringVar(&scanOptions.FileName, "l", "", "File containing a list of target hosts")
 
-	sub.Flags().StringVarP(&subOptions.Output, "output", "o", "", "File to write results to")
+	scanCommand.StringVar(&scanOptions.Patterns, "p", "", "Only scan specified ports")
 
-	commands.AddCommand(sub)
+	scanCommand.IntVar(&scanOptions.BatchSize, "b", 3000, "Set a batch size")
 
-	scanOptions := scan.ScanOptions {}
+	scanCommand.IntVar(&scanOptions.Seconds, "w", 3, "Set a timeout in seconds")
 
-	scan := &cobra.Command {
-		Use: "scan",
-		Short: "Simple TCP port scanner",
-		Run: func(command *cobra.Command, args []string) {
-			scan.Run(scanOptions)
-		},
-	}
+	scanCommand.StringVar(&scanOptions.Output, "o", "", "File to write results to")
 
-	scan.Flags().StringSliceVarP(&scanOptions.Targets, "targets", "t", []string{}, "Target hosts/networks")
+	probeCommand := flag.NewFlagSet("probe", flag.ExitOnError)
 
-	scan.Flags().StringVarP(&scanOptions.FileName, "list", "l", "", "File containing a list of target hosts/networks")
-
-	scan.Flags().StringSliceVarP(&scanOptions.Patterns, "ports", "p", []string{}, "Only scan specified ports")
-
-	scan.Flags().IntVarP(&scanOptions.BatchSize, "batch-size", "b", 3000, "Set a batch size")
-
-	scan.Flags().IntVarP(&scanOptions.Seconds, "timeout", "w", 3, "Set a timeout in seconds")
-
-	scan.Flags().StringVarP(&scanOptions.Output, "output", "o", "", "File to write results to")
-
-	commands.AddCommand(scan)
-
-	probeOptions := probe.ProbeOptions {}
+	probeOptions := probe.Options {}
 
 	show := probe.Show {}
 
-	probe := &cobra.Command {
-		Use: "probe",
-		Short: "HTTP/HTTPS probing",
-		Run: func(command *cobra.Command, args []string) {
-			probe.Run(probeOptions, show)
-		},
+	probeCommand.StringVar(&probeOptions.URL, "u", "", "Target URL")
+
+	probeCommand.StringVar(&probeOptions.FileName, "l", "", "File containing a list of target URLs")
+
+	probeCommand.IntVar(&probeOptions.BatchSize, "b", 3000, "Set a batch size")
+
+	probeCommand.IntVar(&probeOptions.Seconds, "w", 3, "Set a timeout in seconds")
+
+	probeCommand.BoolVar(&show.StatusCode, "s", false, "Show status code")
+
+	probeCommand.BoolVar(&show.Server, "server", false, "Show Server header")
+
+	probeCommand.BoolVar(&show.XPoweredBy, "x", false, "Show X-Powered-By header")
+
+	probeCommand.BoolVar(&show.Location, "location", false, "Show Location header")
+
+	probeCommand.BoolVar(&show.ContentLength, "cl", false, "Show content length")
+
+	probeCommand.BoolVar(&show.ContentType, "ct", false, "Show Content-Type")
+
+	probeCommand.BoolVar(&show.Title, "t", false, "Show page title")
+
+	probeCommand.StringVar(&probeOptions.Output, "o", "", "File to write results to")
+
+	if len(os.Args) == 1 {
+		print.Panic(errors.New("Too few arguments"))
 	}
 
-	probe.Flags().StringSliceVarP(&probeOptions.URLs, "urls", "u", []string{}, "Target URLs")
+	switch os.Args[1] {
+	case "sub":
+		subCommand.Parse(os.Args[2:])
 
-	probe.Flags().StringVarP(&probeOptions.FileName, "list", "l", "", "File containing a list of target URLs")
+		sub.Run(subOptions)
+	case "scan":
+		scanCommand.Parse(os.Args[2:])
 
-	probe.Flags().IntVarP(&probeOptions.BatchSize, "batch-size", "b", 3000, "Set a batch size")
+		scan.Run(scanOptions)
+	case "probe":
+		probeCommand.Parse(os.Args[2:])
 
-	probe.Flags().IntVarP(&probeOptions.Seconds, "timeout", "w", 3, "Set a timeout in seconds")
+		probe.Run(probeOptions, show)
+	default:
+		if os.Args[1] == "-h" || os.Args[1] == "-help" || os.Args[1] == "--help" {
+			fmt.Println("Usage: amt <subcommand> [options]\n\nCommands:\n  sub    Passive subdomain enumeration\n  scan   Simple TCP port scanner\n  probe  HTTP/HTTPS probing")
 
-	probe.Flags().BoolVarP(&show.StatusCode, "status-code", "s", false, "Show status code")
+			return;
+		}
 
-	probe.Flags().BoolVarP(&show.Server, "server", "S", false, "Show Server header")
-
-	probe.Flags().BoolVarP(&show.XPoweredBy, "x-powered-by", "x", false, "Show X-Powered-By header")
-
-	probe.Flags().BoolVarP(&show.Location, "location", "L", false, "Show Location header")
-
-	probe.Flags().BoolVarP(&show.ContentLength, "content-length", "c", false, "Show content length")
-
-	probe.Flags().BoolVarP(&show.ContentType, "content-type", "C", false, "Show Content-Type")
-
-	probe.Flags().BoolVarP(&show.Title, "title", "t", false, "Show page title")
-
-	probe.Flags().StringVarP(&probeOptions.Output, "output", "o", "", "File to write results to")
-
-	commands.AddCommand(probe)
-
-	commands.Execute()
+		print.Panic(errors.New("Unknown option(s)/subcommand"))
+	}
 }
