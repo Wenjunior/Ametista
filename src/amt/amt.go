@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 	"fmt"
-	"flag"
 	"errors"
 )
 
 import (
 	"amt/sub"
+	"amt/flag"
 	"amt/scan"
 	"amt/probe"
 	"amt/utils/print"
@@ -91,10 +91,10 @@ func main() {
 
 		probe.Run(probeOptions, show)
 	default:
-		if os.Args[1] == "-h" || os.Args[1] == "-help" || os.Args[1] == "--help" {
-			fmt.Println("Usage: amt <subcommand> [options]\n\nCommands:\n  sub    Passive subdomain enumeration\n  scan   Simple TCP port scanner\n  probe  HTTP/HTTPS probing")
+		if os.Args[1] == "-h" {
+			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tSimple TCP port scanner\n  probe\t\tHTTP/HTTPS probing")
 
-			return;
+			return
 		}
 
 		print.Panic(errors.New("Unknown option(s)/subcommand"))
