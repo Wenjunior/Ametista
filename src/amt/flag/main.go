@@ -512,7 +512,7 @@ func (f *FlagSet) PrintDefaults() {
 
 		fmt.Fprintf(&b, "  -%s %v", flag.Name, name)
 
-		maxNumber := 15 - len(fmt.Sprintf("-%s %v", flag.Name, name))
+		maxNumber := 14 - len(fmt.Sprintf("-%s %v", flag.Name, name))
 
 		for number := 0; number < maxNumber; number++ {
 			b.WriteString(" ")

@@ -3,8 +3,11 @@ package probe
 import (
 	"io"
 	"fmt"
+	"net"
 	"time"
 	"sync"
+	"errors"
+	"context"
 	"runtime"
 	"strings"
 	"net/http"
@@ -18,11 +21,11 @@ import (
 
 import (
 	"amt/utils/unix"
+	"amt/utils/print"
 	"amt/utils/filesystem"
 )
 
 type Options struct {
-	URL string
 	FileName string
 	Seconds int
 	BatchSize int
@@ -30,6 +33,7 @@ type Options struct {
 }
 
 type Show struct {
+	IPAddress bool
 	StatusCode bool
 	Server bool
 	XPoweredBy bool
@@ -39,8 +43,14 @@ type Show struct {
 	Title bool
 }
 
-func buildResult(url string, show Show, response *http.Response, results *[]string) string {
+func buildResult(url string, show Show, address string, response *http.Response, results *[]string) string {
 	result := url
+
+	if show.IPAddress {
+		ip := strings.Split(address, ":")[0]
+
+		result = fmt.Sprintf("%s [%s]", result, ip)
+	}
 
 	if show.StatusCode {
 		statusCode := response.StatusCode
@@ -104,8 +114,32 @@ func buildResult(url string, show Show, response *http.Response, results *[]stri
 }
 
 func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show, results *[]string) {
+	request, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		return
+	}
+
 	client := http.Client {
 		Timeout: timeOut,
+		Transport: &http.Transport {
+			DialContext: func(ctx context.Context, network, host string) (net.Conn, error) {
+				var dialer net.Dialer
+
+				connection, err := dialer.DialContext(ctx, network, host)
+
+				if err == nil {
+					request.RemoteAddr = connection.RemoteAddr().String()
+				}
+
+				return connection, err
+			},
+		},
+		CheckRedirect: func(newRequest *http.Request, via []*http.Request) error {
+			request = newRequest
+
+			return nil
+		},
 	}
 
 	alreadyFallback := false
@@ -136,7 +170,7 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 
 	locker.Lock()
 
-	result := buildResult(url, show, response, results)
+	result := buildResult(url, show, request.RemoteAddr, response, results)
 
 	fmt.Println(result)
 
@@ -146,14 +180,16 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 }
 
 func Run(options Options, show Show) {
-	urls := []string{options.URL}
+	if options.FileName == "" {
+		print.Panic(errors.New("Argument -l is required"))
+	}
 
-	if options.FileName != "" {
-		lines := filesystem.ReadFile(options.FileName)
+	var urls []string
 
-		for line := range lines {
-			urls = append(urls, line)
-		}
+	lines := filesystem.ReadFile(options.FileName)
+
+	for line := range lines {
+		urls = append(urls, line)
 	}
 
 	timeOut := time.Duration(options.Seconds) * time.Second

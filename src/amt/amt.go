@@ -49,13 +49,13 @@ func main() {
 
 	show := probe.Show {}
 
-	probeCommand.StringVar(&probeOptions.URL, "u", "", "Target URL")
-
 	probeCommand.StringVar(&probeOptions.FileName, "l", "", "File containing a list of target URLs")
 
 	probeCommand.IntVar(&probeOptions.BatchSize, "b", 3000, "Set a batch size")
 
-	probeCommand.IntVar(&probeOptions.Seconds, "w", 3, "Set a timeout in seconds")
+	probeCommand.BoolVar(&show.IPAddress, "i", false, "Show IP address")
+
+	probeCommand.IntVar(&probeOptions.Seconds, "w", 10, "Set a timeout in seconds")
 
 	probeCommand.BoolVar(&show.StatusCode, "s", false, "Show status code")
 
