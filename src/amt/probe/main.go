@@ -43,37 +43,39 @@ type Show struct {
 	Title bool
 }
 
-func buildResult(url string, show Show, address string, response *http.Response, results *[]string) string {
-	result := url
+func buildResult(url string, show Show, address string, response *http.Response) string {
+	builder := strings.Builder {}
+
+	builder.WriteString(url)
 
 	if show.IPAddress {
 		ip := strings.Split(address, ":")[0]
 
-		result = fmt.Sprintf("%s [%s]", result, ip)
+		builder.WriteString(fmt.Sprintf(" [%s]", ip))
 	}
 
 	if show.StatusCode {
 		statusCode := response.StatusCode
 
-		result = fmt.Sprintf("%s [%d]", result, statusCode)
+		builder.WriteString(fmt.Sprintf(" [%d]", statusCode))
 	}
 
 	if show.Server {
 		server := response.Header.Get("Server")
 
-		result = fmt.Sprintf("%s [%s]", result, server)
+		builder.WriteString(fmt.Sprintf(" [%s]", server))
 	}
 
 	if show.XPoweredBy {
 		xPoweredBy := response.Header.Get("X-Powered-By")
 
-		result = fmt.Sprintf("%s [%s]", result, xPoweredBy)
+		builder.WriteString(fmt.Sprintf(" [%s]", xPoweredBy))
 	}
 
 	if show.Location {
 		location := response.Header.Get("Location")
 
-		result = fmt.Sprintf("%s [%s]", result, location)
+		builder.WriteString(fmt.Sprintf(" [%s]", location))
 	}
 
 	if show.ContentLength {
@@ -88,14 +90,14 @@ func buildResult(url string, show Show, address string, response *http.Response,
 		}
 
 		if contentLength != -1 {
-			result = fmt.Sprintf("%s [%d]", result, contentLength)
+			builder.WriteString(fmt.Sprintf(" [%d]", contentLength))
 		}
 	}
 
 	if show.ContentType {
 		contentType := response.Header.Get("Content-Type")
 
-		result = fmt.Sprintf("%s [%s]", result, contentType)
+		builder.WriteString(fmt.Sprintf(" [%s]", contentType))
 	}
 
 	if show.Title {
@@ -106,11 +108,11 @@ func buildResult(url string, show Show, address string, response *http.Response,
 
 			title := pattern.FindString(string(body))
 
-			result = fmt.Sprintf("%s [%s]", result, title)
+			builder.WriteString(fmt.Sprintf(" [%s]", title))
 		}
 	}
 
-	return result
+	return builder.String()
 }
 
 func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show, results *[]string) {
@@ -149,7 +151,7 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 	for count := 0; count < 2; count++ {
 		var err error
 
-		response, err = client.Get(url)
+		response, err = client.Do(request)
 
 		if err == nil {
 			break
@@ -168,9 +170,27 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 		return
 	}
 
-	locker.Lock()
+	if request.RemoteAddr == "" {
+		resolver := &net.Resolver {
+			PreferGo: true,
+		}
 
-	result := buildResult(url, show, request.RemoteAddr, response, results)
+		resolverCtx, cancel := context.WithTimeout(context.Background(), timeOut)
+
+		defer cancel()
+
+		hostname := strings.Split(url, "/")[2]
+
+		ips, err := resolver.LookupIPAddr(resolverCtx, hostname)
+
+		if err == nil {
+			request.RemoteAddr = ips[0].String()
+		}
+	}
+
+	result := buildResult(url, show, request.RemoteAddr, response)
+
+	locker.Lock()
 
 	fmt.Println(result)
 

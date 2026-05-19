@@ -13,3 +13,7 @@
 - Embaralhar a ordem das portas antes de escanear
 - Adicionar suporte a CIDR e range de IPs
 - Adicionar as técnicas TCP SYN (stealth) scan e UDP scan
+
+## Probe
+
+- Analisar o corpo da resposta para descobrir o content type
