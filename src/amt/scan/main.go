@@ -10,12 +10,9 @@ import (
 )
 
 import (
-	"amt/scan/scanner"
-)
-
-import (
-	"amt/utils/unix"
 	"amt/utils/print"
+	"amt/scan/scanner"
+	"amt/utils/ulimit"
 	"amt/utils/filesystem"
 )
 
@@ -98,7 +95,7 @@ func Run(options Options) {
 	ports := parsePatterns(patterns)
 
 	if runtime.GOOS != "windows" {
-		unix.IncreaseUlimit(uint64(options.BatchSize))
+		ulimit.IncreaseUlimit(uint64(options.BatchSize))
 	}
 
 	timeOut := time.Duration(options.Seconds) * time.Second

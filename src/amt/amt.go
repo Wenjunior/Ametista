@@ -92,7 +92,7 @@ func main() {
 		probe.Run(probeOptions, show)
 	default:
 		if os.Args[1] == "-h" {
-			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tSimple TCP port scanner\n  probe\t\tHTTP/HTTPS probing")
+			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP/HTTPS probing")
 
 			return
 		}

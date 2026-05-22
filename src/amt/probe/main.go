@@ -20,8 +20,8 @@ import (
 )
 
 import (
-	"amt/utils/unix"
 	"amt/utils/print"
+	"amt/utils/ulimit"
 	"amt/utils/filesystem"
 )
 
@@ -215,7 +215,7 @@ func Run(options Options, show Show) {
 	timeOut := time.Duration(options.Seconds) * time.Second
 
 	if runtime.GOOS != "windows" {
-		unix.IncreaseUlimit(uint64(options.BatchSize))
+		ulimit.IncreaseUlimit(uint64(options.BatchSize))
 	}
 
 	semaphore := make(chan struct{}, options.BatchSize)
