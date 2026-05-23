@@ -9,7 +9,7 @@ import (
 
 import (
 	"amt/utils/print"
-	"amt/utils/colors"
+	"amt/utils/print/colors"
 )
 
 type Scanner struct {}

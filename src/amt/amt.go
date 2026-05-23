@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"fmt"
-	"errors"
 )
 
 import (
@@ -11,10 +10,17 @@ import (
 	"amt/flag"
 	"amt/scan"
 	"amt/probe"
-	"amt/utils/print"
 )
 
 func main() {
+	defer func() {
+		err := recover()
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+		}
+	} ()
+
 	subCommand := flag.NewFlagSet("sub", flag.ExitOnError)
 
 	subOptions := sub.Options {}
@@ -74,7 +80,7 @@ func main() {
 	probeCommand.StringVar(&probeOptions.Output, "o", "", "File to write results to")
 
 	if len(os.Args) == 1 {
-		print.Panic(errors.New("Too few arguments"))
+		panic("Too few arguments")
 	}
 
 	switch os.Args[1] {
@@ -92,11 +98,11 @@ func main() {
 		probe.Run(probeOptions, show)
 	default:
 		if os.Args[1] == "-h" {
-			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP/HTTPS probing")
+			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP(S) probing")
 
 			return
 		}
 
-		print.Panic(errors.New("Unknown option(s)/subcommand"))
+		panic("Unknown option(s)/subcommand")
 	}
 }

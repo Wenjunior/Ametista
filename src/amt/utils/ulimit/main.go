@@ -5,15 +5,11 @@ import (
 	"syscall"
 )
 
-import (
-	"amt/utils/print"
-)
-
 func IncreaseUlimit(batchSize uint64) {
 	minimumUlimitValue := uint64(1024)
 
 	if batchSize < minimumUlimitValue {
-		print.Panic(fmt.Errorf("Batch size is too low, it has to be at least %d", minimumUlimitValue))
+		panic(fmt.Sprintf("Batch size is too low, it has to be at least %d", minimumUlimitValue))
 	}
 
 	var rLimit syscall.Rlimit
@@ -21,7 +17,7 @@ func IncreaseUlimit(batchSize uint64) {
 	err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rLimit)
 
 	if err != nil {
-		print.Panic(fmt.Errorf("Could not get ulimit value: %s", err.Error()))
+		panic(fmt.Sprintf("Could not get ulimit value: %s", err.Error()))
 	}
 
 	if rLimit.Max >= batchSize {
@@ -35,6 +31,6 @@ func IncreaseUlimit(batchSize uint64) {
 	err = syscall.Setrlimit(syscall.RLIMIT_NOFILE, &rLimit)
 
 	if err != nil {
-		print.Panic(fmt.Errorf("Could not set a ulimit value: %s", err.Error()))
+		panic(fmt.Sprintf("Could not set a ulimit value: %s", err.Error()))
 	}
 }

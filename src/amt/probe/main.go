@@ -6,7 +6,6 @@ import (
 	"net"
 	"time"
 	"sync"
-	"errors"
 	"context"
 	"runtime"
 	"strings"
@@ -20,7 +19,6 @@ import (
 )
 
 import (
-	"amt/utils/print"
 	"amt/utils/ulimit"
 	"amt/utils/filesystem"
 )
@@ -201,7 +199,7 @@ func sendProbe(url string, timeOut time.Duration, locker *sync.Mutex, show Show,
 
 func Run(options Options, show Show) {
 	if options.FileName == "" {
-		print.Panic(errors.New("Argument -l is required"))
+		panic("Argument -l is required")
 	}
 
 	var urls []string

@@ -7,21 +7,11 @@ import (
 )
 
 import (
-	"amt/utils/colors"
+	"amt/utils/print/colors"
 )
 
-func eprintln(err string, color string) {
-	fmt.Fprintf(os.Stderr, "%s%s%s\n", color, err, colors.RESET)
-}
-
 func Eprintln(err string) {
-	eprintln(err, colors.YELLOW)
-}
-
-func Panic(err error) {
-	eprintln(err.Error(), colors.RED)
-
-	os.Exit(1)
+	fmt.Fprintf(os.Stderr, "%s%s%s\n", colors.YELLOW, err, colors.RESET)
 }
 
 func BufferedPrint(items []string) {

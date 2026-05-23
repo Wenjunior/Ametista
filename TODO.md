@@ -18,16 +18,16 @@
 
 - Analisar o corpo da resposta para descobrir o content type
 - Adicionar novas opções:
-	- Mostrar o response time
-	- Habilitar detecção de tecnologias
+	- Mostrar o response time - `-rt`
+	- Habilitar detecção de tecnologias - `-td`
 - Adicionar matchers:
-	- `-mt` - response time
+	- `-mrt` - response time
 	- `-mc` - status code
 	- `-ml` - content length
 	- `-ms` - string
 	- `-mr` - regex
 - Adicionar filtros:
-	- `-ft` - response time
+	- `-frt` - response time
 	- `-fc` - status code
 	- `-fl` - content length
 	- `-fs` - string

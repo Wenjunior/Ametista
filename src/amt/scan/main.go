@@ -35,17 +35,17 @@ func parsePatterns(patterns []string) []int {
 			firstNumber, err := strconv.Atoi(parts[0])
 
 			if err != nil {
-				print.Panic(fmt.Errorf("Could not convert %s: %s", parts[0], err.Error()))
+				panic(fmt.Sprintf("Could not convert %s: %s", parts[0], err.Error()))
 			}
 
 			lastNumber, err := strconv.Atoi(parts[1])
 
 			if err != nil {
-				print.Panic(fmt.Errorf("Could not convert %s: %s", parts[1], err.Error()))
+				panic(fmt.Sprintf("Could not convert %s: %s", parts[1], err.Error()))
 			}
 
 			if firstNumber > lastNumber {
-				print.Panic(fmt.Errorf("%d is greater than %d", firstNumber, lastNumber))
+				panic(fmt.Sprintf("%d is greater than %d", firstNumber, lastNumber))
 			}
 
 			for port := firstNumber; port <= lastNumber; port++ {
@@ -55,7 +55,7 @@ func parsePatterns(patterns []string) []int {
 			port, err := strconv.Atoi(pattern)
 
 			if err != nil {
-				print.Panic(fmt.Errorf("Could not convert %s: %s", pattern, err.Error()))
+				panic(fmt.Sprintf("Could not convert %s: %s", pattern, err.Error()))
 			}
 
 			ports = append(ports, port)
@@ -89,7 +89,14 @@ func Run(options Options) {
 	if len(patterns) == 1 {
 		// Source: https://exposure.shodan.io/#/
 
-		patterns = []string{"21-22", "25", "53", "80", "110", "123", "143", "161", "179", "443", "465", "500", "541", "554", "587", "646", "888", "993", "1024", "1701", "1723", "1801", "1900", "2000", "2082-2083", "2087", "3306", "4567", "5001", "5060", "5353", "5683", "5985", "7170", "7547", "7676", "8008-8010", "8080-8081", "8085", "8089", "8159", "8291", "8443", "9000", "9080", "9100", "10443", "30005-30006", "37777", "49152", "49501-49502", "50001", "50080", "50805", "51005", "58000", "58603"}
+		patterns = []string{
+			"21-22", "25", "53", "80", "110", "123", "143", "161", "179", "443",
+			"465", "500", "541", "554", "587", "646", "888", "993", "1024", "1701",
+			"1723", "1801", "1900", "2000", "2082-2083", "2087", "3306", "4567", "5001", "5060",
+			"5353", "5683", "5985", "7170", "7547", "7676", "8008-8010", "8080-8081", "8085", "8089",
+			"8159", "8291", "8443", "9000", "9080", "9100", "10443", "30005-30006", "37777", "49152",
+			"49501-49502", "50001", "50080", "50805", "51005", "58000", "58603",
+		}
 	}
 
 	ports := parsePatterns(patterns)

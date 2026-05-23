@@ -6,10 +6,6 @@ import (
 	"bufio"
 )
 
-import (
-	"amt/utils/print"
-)
-
 func ReadFile(fileName string) (<-chan string) {
 	line := make(chan string)
 
@@ -19,7 +15,7 @@ func ReadFile(fileName string) (<-chan string) {
 		file, err := os.Open(fileName)
 
 		if err != nil {
-			print.Panic(fmt.Errorf("Could not open %s: %s", fileName, err.Error()))
+			panic(fmt.Sprintf("Could not open %s: %s", fileName, err.Error()))
 		}
 
 		defer file.Close()
@@ -33,7 +29,7 @@ func ReadFile(fileName string) (<-chan string) {
 		err = reader.Err()
 
 		if err != nil {
-			print.Panic(fmt.Errorf("Could not read line: %s", err.Error()))
+			panic(fmt.Sprintf("Could not read line: %s", err.Error()))
 		}
 	} ()
 
@@ -44,7 +40,7 @@ func WriteResults(fileName string, results []string) {
 	file, err := os.Create(fileName)
 
 	if err != nil {
-		print.Panic(fmt.Errorf("Could not save results: %s", err.Error()))
+		panic(fmt.Sprintf("Could not save results: %s", err.Error()))
 	}
 
 	defer file.Close()
@@ -53,7 +49,7 @@ func WriteResults(fileName string, results []string) {
 		_, err = file.WriteString(result + "\n")
 
 		if err != nil {
-			print.Panic(fmt.Errorf("Could not write result in output file: %s", err.Error()))
+			panic(fmt.Sprintf("Could not write result in output file: %s", err.Error()))
 		}
 	}
 
