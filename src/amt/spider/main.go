@@ -15,6 +15,7 @@ import (
 	"amt/utils/print"
 	"amt/utils/ulimit"
 	"amt/utils/filesystem"
+	"amt/utils/print/colors"
 )
 
 import (
@@ -120,7 +121,7 @@ func crawl(url string, timeOut time.Duration, batchSize int) []string {
 
 			defer func() { <- semaphore }()
 
-			fmt.Println(foundURL)
+			print.Cprintln(foundURL, colors.GREEN)
 
 			scrap(foundURL, timeOut, baseURL, &locker, &foundURLs)
 		} ()

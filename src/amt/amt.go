@@ -76,7 +76,7 @@ func main() {
 
 	probeCommand.BoolVar(&show.ContentType, "ct", false, "Show Content-Type")
 
-	probeCommand.BoolVar(&show.Title, "t", false, "Show page title")
+	probeCommand.BoolVar(&show.Title, "t", false, "Show title")
 
 	probeCommand.StringVar(&probeOptions.Output, "o", "", "File to write results to")
 

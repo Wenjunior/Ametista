@@ -46,27 +46,27 @@ func newBoolValue(value bool, pointer *bool) *boolValue {
 	return (*boolValue) (pointer)
 }
 
-func (this *boolValue) Set(str string) error {
+func (self *boolValue) Set(str string) error {
 	value, err := strconv.ParseBool(str)
 
 	if err != nil {
 		err = errParse
 	}
 
-	*this = boolValue(value)
+	*self = boolValue(value)
 
 	return err
 }
 
-func (this *boolValue) Get() any {
-	return bool(*this)
+func (self *boolValue) Get() any {
+	return bool(*self)
 }
 
-func (this *boolValue) String() string {
-	return strconv.FormatBool(bool(*this))
+func (self *boolValue) String() string {
+	return strconv.FormatBool(bool(*self))
 }
 
-func (this *boolValue) IsBoolFlag() bool {
+func (self *boolValue) IsBoolFlag() bool {
 	return true
 }
 
@@ -83,24 +83,24 @@ func newIntValue(value int, pointer *int) *intValue {
 	return (*intValue) (pointer)
 }
 
-func (this *intValue) Set(str string) error {
+func (self *intValue) Set(str string) error {
 	value, err := strconv.ParseInt(str, 0, strconv.IntSize)
 
 	if err != nil {
 		err = numError(err)
 	}
 
-	*this = intValue(value)
+	*self = intValue(value)
 
 	return err
 }
 
-func (this *intValue) Get() any {
-	return int(*this)
+func (self *intValue) Get() any {
+	return int(*self)
 }
 
-func (this *intValue) String() string {
-	return strconv.Itoa(int(*this))
+func (self *intValue) String() string {
+	return strconv.Itoa(int(*self))
 }
 
 type int64Value int64
@@ -111,24 +111,24 @@ func newInt64Value(value int64, pointer *int64) *int64Value {
 	return (*int64Value) (pointer)
 }
 
-func (this *int64Value) Set(str string) error {
+func (self *int64Value) Set(str string) error {
 	value, err := strconv.ParseInt(str, 0, 64)
 
 	if err != nil {
 		err = numError(err)
 	}
 
-	*this = int64Value(value)
+	*self = int64Value(value)
 
 	return err
 }
 
-func (this *int64Value) Get() any {
-	return int64(*this)
+func (self *int64Value) Get() any {
+	return int64(*self)
 }
 
-func (this *int64Value) String() string {
-	return strconv.FormatInt(int64(*this), 10)
+func (self *int64Value) String() string {
+	return strconv.FormatInt(int64(*self), 10)
 }
 
 type uintValue uint
@@ -139,24 +139,24 @@ func newUintValue(value uint, pointer *uint) *uintValue {
 	return (*uintValue) (pointer)
 }
 
-func (this *uintValue) Set(str string) error {
+func (self *uintValue) Set(str string) error {
 	value, err := strconv.ParseUint(str, 0, strconv.IntSize)
 
 	if err != nil {
 		err = numError(err)
 	}
 
-	*this = uintValue(value)
+	*self = uintValue(value)
 
 	return err
 }
 
-func (this *uintValue) Get() any {
-	return uint(*this)
+func (self *uintValue) Get() any {
+	return uint(*self)
 }
 
-func (this *uintValue) String() string {
-	return strconv.FormatUint(uint64(*this), 10)
+func (self *uintValue) String() string {
+	return strconv.FormatUint(uint64(*self), 10)
 }
 
 type uint64Value uint64
@@ -167,24 +167,24 @@ func newUint64Value(value uint64, pointer *uint64) *uint64Value {
 	return (*uint64Value) (pointer)
 }
 
-func (this *uint64Value) Set(str string) error {
+func (self *uint64Value) Set(str string) error {
 	value, err := strconv.ParseUint(str, 0, 64)
 
 	if err != nil {
 		err = numError(err)
 	}
 
-	*this = uint64Value(value)
+	*self = uint64Value(value)
 
 	return err
 }
 
-func (this *uint64Value) Get() any {
-	return uint64(*this)
+func (self *uint64Value) Get() any {
+	return uint64(*self)
 }
 
-func (this *uint64Value) String() string {
-	return strconv.FormatUint(uint64(*this), 10)
+func (self *uint64Value) String() string {
+	return strconv.FormatUint(uint64(*self), 10)
 }
 
 type stringValue string
@@ -195,18 +195,18 @@ func newStringValue(value string, pointer *string) *stringValue {
 	return (*stringValue) (pointer)
 }
 
-func (this *stringValue) Set(value string) error {
-	*this = stringValue(value)
+func (self *stringValue) Set(value string) error {
+	*self = stringValue(value)
 
 	return nil
 }
 
-func (this *stringValue) Get() any {
-	return string(*this)
+func (self *stringValue) Get() any {
+	return string(*self)
 }
 
-func (this *stringValue) String() string {
-	return string(*this)
+func (self *stringValue) String() string {
+	return string(*self)
 }
 
 type float64Value float64
@@ -217,24 +217,24 @@ func newFloat64Value(value float64, pointer *float64) *float64Value {
 	return (*float64Value) (pointer)
 }
 
-func (this *float64Value) Set(str string) error {
+func (self *float64Value) Set(str string) error {
 	value, err := strconv.ParseFloat(str, 64)
 
 	if err != nil {
 		err = numError(err)
 	}
 
-	*this = float64Value(value)
+	*self = float64Value(value)
 
 	return err
 }
 
-func (this *float64Value) Get() any {
-	return float64(*this)
+func (self *float64Value) Get() any {
+	return float64(*self)
 }
 
-func (this *float64Value) String() string {
-	return strconv.FormatFloat(float64(*this), 'g', -1, 64)
+func (self *float64Value) String() string {
+	return strconv.FormatFloat(float64(*self), 'g', -1, 64)
 }
 
 type durationValue time.Duration
@@ -245,24 +245,24 @@ func newDurationValue(value time.Duration, pointer *time.Duration) *durationValu
 	return (*durationValue) (pointer)
 }
 
-func (this *durationValue) Set(str string) error {
+func (self *durationValue) Set(str string) error {
 	value, err := time.ParseDuration(str)
 
 	if err != nil {
 		err = errParse
 	}
 
-	*this = durationValue(value)
+	*self = durationValue(value)
 
 	return err
 }
 
-func (this *durationValue) Get() any {
-	return time.Duration(*this)
+func (self *durationValue) Get() any {
+	return time.Duration(*self)
 }
 
-func (this *durationValue) String() string {
-	return (*time.Duration) (this).String()
+func (self *durationValue) String() string {
+	return (*time.Duration) (self).String()
 }
 
 type textValue struct {
@@ -291,16 +291,16 @@ func newTextValue(value encoding.TextMarshaler, pointer encoding.TextUnmarshaler
 	return textValue {pointer}
 }
 
-func (this textValue) Set(str string) error {
-	return this.pointer.UnmarshalText([]byte(str))
+func (self textValue) Set(str string) error {
+	return self.pointer.UnmarshalText([]byte(str))
 }
 
-func (this textValue) Get() any {
-	return this.pointer
+func (self textValue) Get() any {
+	return self.pointer
 }
 
-func (this textValue) String() string {
-	if marshaler, ok := this.pointer.(encoding.TextMarshaler); ok {
+func (self textValue) String() string {
+	if marshaler, ok := self.pointer.(encoding.TextMarshaler); ok {
 		if encodedText, err := marshaler.MarshalText(); err == nil {
 			return string(encodedText)
 		}
@@ -311,25 +311,25 @@ func (this textValue) String() string {
 
 type funcValue func(string) error
 
-func (this funcValue) Set(str string) error {
-	return this(str)
+func (self funcValue) Set(str string) error {
+	return self(str)
 }
 
-func (this funcValue) String() string {
+func (self funcValue) String() string {
 	return ""
 }
 
 type boolFuncValue func(string) error
 
-func (this boolFuncValue) Set(str string) error {
-	return this(str)
+func (self boolFuncValue) Set(str string) error {
+	return self(str)
 }
 
-func (this boolFuncValue) String() string {
+func (self boolFuncValue) String() string {
 	return ""
 }
 
-func (this boolFuncValue) IsBoolFlag() bool {
+func (self boolFuncValue) IsBoolFlag() bool {
 	return true
 }
 
@@ -388,28 +388,28 @@ func sortFlags(flags map[string]*Flag) []*Flag {
 	return result
 }
 
-func (this *FlagSet) Output() io.Writer {
-	if this.output == nil {
+func (self *FlagSet) Output() io.Writer {
+	if self.output == nil {
 		return os.Stderr
 	}
 
-	return this.output
+	return self.output
 }
 
-func (this *FlagSet) Name() string {
-	return this.name
+func (self *FlagSet) Name() string {
+	return self.name
 }
 
-func (this *FlagSet) ErrorHandling() ErrorHandling {
-	return this.errorHandling
+func (self *FlagSet) ErrorHandling() ErrorHandling {
+	return self.errorHandling
 }
 
-func (this *FlagSet) SetOutput(output io.Writer) {
-	this.output = output
+func (self *FlagSet) SetOutput(output io.Writer) {
+	self.output = output
 }
 
-func (this *FlagSet) VisitAll(function func(*Flag)) {
-	for _, flag := range sortFlags(this.formal) {
+func (self *FlagSet) VisitAll(function func(*Flag)) {
+	for _, flag := range sortFlags(self.formal) {
 		function(flag)
 	}
 }
@@ -418,8 +418,8 @@ func VisitAll(function func(*Flag)) {
 	CommandLine.VisitAll(function)
 }
 
-func (this *FlagSet) Visit(function func(*Flag)) {
-	for _, flag := range sortFlags(this.actual) {
+func (self *FlagSet) Visit(function func(*Flag)) {
+	for _, flag := range sortFlags(self.actual) {
 		function(flag)
 	}
 }
@@ -428,20 +428,20 @@ func Visit(function func(*Flag)) {
 	CommandLine.Visit(function)
 }
 
-func (this *FlagSet) Lookup(name string) *Flag {
-	return this.formal[name]
+func (self *FlagSet) Lookup(name string) *Flag {
+	return self.formal[name]
 }
 
 func Lookup(name string) *Flag {
 	return CommandLine.formal[name]
 }
 
-func (this *FlagSet) Set(name, value string) error {
-	return this.set(name, value)
+func (self *FlagSet) Set(name, value string) error {
+	return self.set(name, value)
 }
 
-func (this *FlagSet) set(name, value string) error {
-	flag, ok := this.formal[name]
+func (self *FlagSet) set(name, value string) error {
+	flag, ok := self.formal[name]
 
 	if !ok {
 		_, file, line, ok := runtime.Caller(2)
@@ -452,11 +452,11 @@ func (this *FlagSet) set(name, value string) error {
 			line = 0
 		}
 
-		if this.undefined == nil {
-			this.undefined = map[string]string{}
+		if self.undefined == nil {
+			self.undefined = map[string]string{}
 		}
 
-		this.undefined[name] = fmt.Sprintf("%s:%d", file, line)
+		self.undefined[name] = fmt.Sprintf("%s:%d", file, line)
 
 		return fmt.Errorf("no such flag -%v", name)
 	}
@@ -467,11 +467,11 @@ func (this *FlagSet) set(name, value string) error {
 		return err
 	}
 
-	if this.actual == nil {
-		this.actual = make(map[string]*Flag)
+	if self.actual == nil {
+		self.actual = make(map[string]*Flag)
 	}
 
-	this.actual[name] = flag
+	self.actual[name] = flag
 
 	return nil
 }
@@ -546,12 +546,12 @@ func UnquoteUsage(flag *Flag) (name string, usage string) {
 	return
 }
 
-func (this *FlagSet) PrintDefaults() {
+func (self *FlagSet) PrintDefaults() {
 	var isZeroValueErrs []error
 
 	fmt.Println("Options:")
 
-	this.VisitAll(func(flag *Flag) {
+	self.VisitAll(func(flag *Flag) {
 		var builder strings.Builder
 
 		name, usage := UnquoteUsage(flag)
@@ -576,14 +576,14 @@ func (this *FlagSet) PrintDefaults() {
 			}
 		}
 
-		fmt.Fprint(this.Output(), builder.String(), "\n")
+		fmt.Fprint(self.Output(), builder.String(), "\n")
 	})
 
 	if errs := isZeroValueErrs; len(errs) > 0 {
-		fmt.Fprintln(this.Output())
+		fmt.Fprintln(self.Output())
 
 		for _, err := range errs {
-			fmt.Fprintln(this.Output(), err)
+			fmt.Fprintln(self.Output(), err)
 		}
 	}
 }
@@ -592,14 +592,14 @@ func PrintDefaults() {
 	CommandLine.PrintDefaults()
 }
 
-func (this *FlagSet) defaultUsage() {
-	if this.name == "" {
-		fmt.Fprintf(this.Output(), "Usage:\n")
+func (self *FlagSet) defaultUsage() {
+	if self.name == "" {
+		fmt.Fprintf(self.Output(), "Usage:\n")
 	} else {
-		fmt.Fprintf(this.Output(), "Usage: amt %s [options]\n\n", this.name)
+		fmt.Fprintf(self.Output(), "Usage: amt %s [options]\n\n", self.name)
 	}
 
-	this.PrintDefaults()
+	self.PrintDefaults()
 }
 
 var Usage = func() {
@@ -608,54 +608,54 @@ var Usage = func() {
 	PrintDefaults()
 }
 
-func (this *FlagSet) NFlag() int {
-	return len(this.actual)
+func (self *FlagSet) NFlag() int {
+	return len(self.actual)
 }
 
 func NFlag() int {
 	return len(CommandLine.actual)
 }
 
-func (this *FlagSet) Arg(index int) string {
-	if index < 0 || index >= len(this.args) {
+func (self *FlagSet) Arg(index int) string {
+	if index < 0 || index >= len(self.args) {
 		return ""
 	}
 
-	return this.args[index]
+	return self.args[index]
 }
 
 func Arg(index int) string {
 	return CommandLine.Arg(index)
 }
 
-func (this *FlagSet) NArg() int {
-	return len(this.args)
+func (self *FlagSet) NArg() int {
+	return len(self.args)
 }
 
 func NArg() int {
 	return len(CommandLine.args)
 }
 
-func (this *FlagSet) Args() []string {
-	return this.args
+func (self *FlagSet) Args() []string {
+	return self.args
 }
 
 func Args() []string {
 	return CommandLine.args
 }
 
-func (this *FlagSet) BoolVar(pointer *bool, name string, value bool, usage string) {
-	this.Var(newBoolValue(value, pointer), name, usage)
+func (self *FlagSet) BoolVar(pointer *bool, name string, value bool, usage string) {
+	self.Var(newBoolValue(value, pointer), name, usage)
 }
 
 func BoolVar(pointer *bool, name string, value bool, usage string) {
 	CommandLine.Var(newBoolValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Bool(name string, value bool, usage string) *bool {
+func (self *FlagSet) Bool(name string, value bool, usage string) *bool {
 	pointer := new(bool)
 
-	this.BoolVar(pointer, name, value, usage)
+	self.BoolVar(pointer, name, value, usage)
 
 	return pointer
 }
@@ -664,18 +664,18 @@ func Bool(name string, value bool, usage string) *bool {
 	return CommandLine.Bool(name, value, usage)
 }
 
-func (this *FlagSet) IntVar(pointer *int, name string, value int, usage string) {
-	this.Var(newIntValue(value, pointer), name, usage)
+func (self *FlagSet) IntVar(pointer *int, name string, value int, usage string) {
+	self.Var(newIntValue(value, pointer), name, usage)
 }
 
 func IntVar(pointer *int, name string, value int, usage string) {
 	CommandLine.Var(newIntValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Int(name string, value int, usage string) *int {
+func (self *FlagSet) Int(name string, value int, usage string) *int {
 	pointer := new(int)
 
-	this.IntVar(pointer, name, value, usage)
+	self.IntVar(pointer, name, value, usage)
 
 	return pointer
 }
@@ -684,18 +684,18 @@ func Int(name string, value int, usage string) *int {
 	return CommandLine.Int(name, value, usage)
 }
 
-func (this *FlagSet) Int64Var(pointer *int64, name string, value int64, usage string) {
-	this.Var(newInt64Value(value, pointer), name, usage)
+func (self *FlagSet) Int64Var(pointer *int64, name string, value int64, usage string) {
+	self.Var(newInt64Value(value, pointer), name, usage)
 }
 
 func Int64Var(pointer *int64, name string, value int64, usage string) {
 	CommandLine.Var(newInt64Value(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Int64(name string, value int64, usage string) *int64 {
+func (self *FlagSet) Int64(name string, value int64, usage string) *int64 {
 	pointer := new(int64)
 
-	this.Int64Var(pointer, name, value, usage)
+	self.Int64Var(pointer, name, value, usage)
 
 	return pointer
 }
@@ -704,18 +704,18 @@ func Int64(name string, value int64, usage string) *int64 {
 	return CommandLine.Int64(name, value, usage)
 }
 
-func (this *FlagSet) UintVar(pointer *uint, name string, value uint, usage string) {
-	this.Var(newUintValue(value, pointer), name, usage)
+func (self *FlagSet) UintVar(pointer *uint, name string, value uint, usage string) {
+	self.Var(newUintValue(value, pointer), name, usage)
 }
 
 func UintVar(pointer *uint, name string, value uint, usage string) {
 	CommandLine.Var(newUintValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Uint(name string, value uint, usage string) *uint {
+func (self *FlagSet) Uint(name string, value uint, usage string) *uint {
 	pointer := new(uint)
 
-	this.UintVar(pointer, name, value, usage)
+	self.UintVar(pointer, name, value, usage)
 
 	return pointer
 }
@@ -724,18 +724,18 @@ func Uint(name string, value uint, usage string) *uint {
 	return CommandLine.Uint(name, value, usage)
 }
 
-func (this *FlagSet) Uint64Var(pointer *uint64, name string, value uint64, usage string) {
-	this.Var(newUint64Value(value, pointer), name, usage)
+func (self *FlagSet) Uint64Var(pointer *uint64, name string, value uint64, usage string) {
+	self.Var(newUint64Value(value, pointer), name, usage)
 }
 
 func Uint64Var(pointer *uint64, name string, value uint64, usage string) {
 	CommandLine.Var(newUint64Value(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Uint64(name string, value uint64, usage string) *uint64 {
+func (self *FlagSet) Uint64(name string, value uint64, usage string) *uint64 {
 	pointer := new(uint64)
 
-	this.Uint64Var(pointer, name, value, usage)
+	self.Uint64Var(pointer, name, value, usage)
 
 	return pointer
 }
@@ -744,18 +744,18 @@ func Uint64(name string, value uint64, usage string) *uint64 {
 	return CommandLine.Uint64(name, value, usage)
 }
 
-func (this *FlagSet) StringVar(pointer *string, name string, value string, usage string) {
-	this.Var(newStringValue(value, pointer), name, usage)
+func (self *FlagSet) StringVar(pointer *string, name string, value string, usage string) {
+	self.Var(newStringValue(value, pointer), name, usage)
 }
 
 func StringVar(pointer *string, name string, value string, usage string) {
 	CommandLine.Var(newStringValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) String(name string, value string, usage string) *string {
+func (self *FlagSet) String(name string, value string, usage string) *string {
 	pointer := new(string)
 
-	this.StringVar(pointer, name, value, usage)
+	self.StringVar(pointer, name, value, usage)
 
 	return pointer
 }
@@ -764,18 +764,18 @@ func String(name string, value string, usage string) *string {
 	return CommandLine.String(name, value, usage)
 }
 
-func (this *FlagSet) Float64Var(pointer *float64, name string, value float64, usage string) {
-	this.Var(newFloat64Value(value, pointer), name, usage)
+func (self *FlagSet) Float64Var(pointer *float64, name string, value float64, usage string) {
+	self.Var(newFloat64Value(value, pointer), name, usage)
 }
 
 func Float64Var(pointer *float64, name string, value float64, usage string) {
 	CommandLine.Var(newFloat64Value(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Float64(name string, value float64, usage string) *float64 {
+func (self *FlagSet) Float64(name string, value float64, usage string) *float64 {
 	pointer := new(float64)
 
-	this.Float64Var(pointer, name, value, usage)
+	self.Float64Var(pointer, name, value, usage)
 
 	return pointer
 }
@@ -784,18 +784,18 @@ func Float64(name string, value float64, usage string) *float64 {
 	return CommandLine.Float64(name, value, usage)
 }
 
-func (this *FlagSet) DurationVar(pointer *time.Duration, name string, value time.Duration, usage string) {
-	this.Var(newDurationValue(value, pointer), name, usage)
+func (self *FlagSet) DurationVar(pointer *time.Duration, name string, value time.Duration, usage string) {
+	self.Var(newDurationValue(value, pointer), name, usage)
 }
 
 func DurationVar(pointer *time.Duration, name string, value time.Duration, usage string) {
 	CommandLine.Var(newDurationValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Duration(name string, value time.Duration, usage string) *time.Duration {
+func (self *FlagSet) Duration(name string, value time.Duration, usage string) *time.Duration {
 	pointer := new(time.Duration)
 
-	this.DurationVar(pointer, name, value, usage)
+	self.DurationVar(pointer, name, value, usage)
 
 	return pointer
 }
@@ -804,35 +804,35 @@ func Duration(name string, value time.Duration, usage string) *time.Duration {
 	return CommandLine.Duration(name, value, usage)
 }
 
-func (this *FlagSet) TextVar(pointer encoding.TextUnmarshaler, name string, value encoding.TextMarshaler, usage string) {
-	this.Var(newTextValue(value, pointer), name, usage)
+func (self *FlagSet) TextVar(pointer encoding.TextUnmarshaler, name string, value encoding.TextMarshaler, usage string) {
+	self.Var(newTextValue(value, pointer), name, usage)
 }
 
 func TextVar(pointer encoding.TextUnmarshaler, name string, value encoding.TextMarshaler, usage string) {
 	CommandLine.Var(newTextValue(value, pointer), name, usage)
 }
 
-func (this *FlagSet) Func(name, usage string, function func(string) error) {
-	this.Var(funcValue(function), name, usage)
+func (self *FlagSet) Func(name, usage string, function func(string) error) {
+	self.Var(funcValue(function), name, usage)
 }
 
 func Func(name, usage string, function func(string) error) {
 	CommandLine.Func(name, usage, function)
 }
 
-func (this *FlagSet) BoolFunc(name, usage string, function func(string) error) {
-	this.Var(boolFuncValue(function), name, usage)
+func (self *FlagSet) BoolFunc(name, usage string, function func(string) error) {
+	self.Var(boolFuncValue(function), name, usage)
 }
 
 func BoolFunc(name, usage string, function func(string) error) {
 	CommandLine.BoolFunc(name, usage, function)
 }
 
-func (this *FlagSet) Var(value Value, name string, usage string) {
+func (self *FlagSet) Var(value Value, name string, usage string) {
 	if strings.HasPrefix(name, "-") {
-		panic(this.sprintf("flag %q begins with -", name))
+		panic(self.sprintf("flag %q begins with -", name))
 	} else if strings.Contains(name, "=") {
-		panic(this.sprintf("flag %q contains =", name))
+		panic(self.sprintf("flag %q contains =", name))
 	}
 
 	flag := &Flag{
@@ -842,65 +842,65 @@ func (this *FlagSet) Var(value Value, name string, usage string) {
 		value.String(),
 	}
 
-	_, alreadythere := this.formal[name]
+	_, alreadythere := self.formal[name]
 
 	if alreadythere {
 		var message string
 
-		if this.name == "" {
-			message = this.sprintf("flag redefined: %s", name)
+		if self.name == "" {
+			message = self.sprintf("flag redefined: %s", name)
 		} else {
-			message = this.sprintf("%s flag redefined: %s", this.name, name)
+			message = self.sprintf("%s flag redefined: %s", self.name, name)
 		}
 
 		panic(message)
 	}
 
-	if position := this.undefined[name]; position != "" {
+	if position := self.undefined[name]; position != "" {
 		panic(fmt.Sprintf("flag %s set at %s before being defined", name, position))
 	}
 
-	if this.formal == nil {
-		this.formal = make(map[string]*Flag)
+	if self.formal == nil {
+		self.formal = make(map[string]*Flag)
 	}
 
-	this.formal[name] = flag
+	self.formal[name] = flag
 }
 
 func Var(value Value, name string, usage string) {
 	CommandLine.Var(value, name, usage)
 }
 
-func (this *FlagSet) sprintf(format string, any ...any) string {
+func (self *FlagSet) sprintf(format string, any ...any) string {
 	message := fmt.Sprintf(format, any...)
 
-	fmt.Fprintln(this.Output(), message)
+	fmt.Fprintln(self.Output(), message)
 
 	return message
 }
 
-func (this *FlagSet) failf(format string, any ...any) error {
-	message := this.sprintf(format, any...)
+func (self *FlagSet) failf(format string, any ...any) error {
+	message := self.sprintf(format, any...)
 
-	this.usage()
+	self.usage()
 
 	return errors.New(message)
 }
 
-func (this *FlagSet) usage() {
-	if this.Usage == nil {
-		this.defaultUsage()
+func (self *FlagSet) usage() {
+	if self.Usage == nil {
+		self.defaultUsage()
 	} else {
-		this.Usage()
+		self.Usage()
 	}
 }
 
-func (this *FlagSet) parseOne() (bool, error) {
-	if len(this.args) == 0 {
+func (self *FlagSet) parseOne() (bool, error) {
+	if len(self.args) == 0 {
 		return false, nil
 	}
 
-	str := this.args[0]
+	str := self.args[0]
 
 	if len(str) < 2 || str[0] != '-' {
 		return false, nil
@@ -912,7 +912,7 @@ func (this *FlagSet) parseOne() (bool, error) {
 		numMinuses++
 
 		if len(str) == 2 {
-			this.args = this.args[1:]
+			self.args = self.args[1:]
 
 			return false, nil
 		}
@@ -921,10 +921,10 @@ func (this *FlagSet) parseOne() (bool, error) {
 	name := str[numMinuses:]
 
 	if len(name) == 0 || name[0] == '-' || name[0] == '=' {
-		return false, this.failf("bad flag syntax: %s", str)
+		return false, self.failf("bad flag syntax: %s", str)
 	}
 
-	this.args = this.args[1:]
+	self.args = self.args[1:]
 
 	hasValue := false
 
@@ -942,60 +942,60 @@ func (this *FlagSet) parseOne() (bool, error) {
 		}
 	}
 
-	flag, ok := this.formal[name]
+	flag, ok := self.formal[name]
 
 	if !ok {
 		if name == "help" || name == "h" {
-			this.usage()
+			self.usage()
 
 			return false, ErrHelp
 		}
 
-		return false, this.failf("flag provided but not defined: -%s", name)
+		return false, self.failf("flag provided but not defined: -%s", name)
 	}
 
 	if flagValue, ok := flag.Value.(boolFlag); ok && flagValue.IsBoolFlag() {
 		if hasValue {
 			if err := flagValue.Set(value); err != nil {
-				return false, this.failf("invalid boolean value %q for -%s: %v", value, name, err)
+				return false, self.failf("invalid boolean value %q for -%s: %v", value, name, err)
 			}
 		} else {
 			if err := flagValue.Set("true"); err != nil {
-				return false, this.failf("invalid boolean flag %s: %v", name, err)
+				return false, self.failf("invalid boolean flag %s: %v", name, err)
 			}
 		}
 	} else {
-		if !hasValue && len(this.args) > 0 {
+		if !hasValue && len(self.args) > 0 {
 			hasValue = true
 
-			value, this.args = this.args[0], this.args[1:]
+			value, self.args = self.args[0], self.args[1:]
 		}
 
 		if !hasValue {
-			return false, this.failf("flag needs an argument: -%s", name)
+			return false, self.failf("flag needs an argument: -%s", name)
 		}
 
 		if err := flag.Value.Set(value); err != nil {
-			return false, this.failf("invalid value %q for flag -%s: %v", value, name, err)
+			return false, self.failf("invalid value %q for flag -%s: %v", value, name, err)
 		}
 	}
 
-	if this.actual == nil {
-		this.actual = make(map[string]*Flag)
+	if self.actual == nil {
+		self.actual = make(map[string]*Flag)
 	}
 
-	this.actual[name] = flag
+	self.actual[name] = flag
 
 	return true, nil
 }
 
-func (this *FlagSet) Parse(arguments []string) error {
-	this.parsed = true
+func (self *FlagSet) Parse(arguments []string) error {
+	self.parsed = true
 
-	this.args = arguments
+	self.args = arguments
 
 	for {
-		seen, err := this.parseOne()
+		seen, err := self.parseOne()
 
 		if seen {
 			continue
@@ -1005,7 +1005,7 @@ func (this *FlagSet) Parse(arguments []string) error {
 			break
 		}
 
-		switch this.errorHandling {
+		switch self.errorHandling {
 		case ContinueOnError:
 			return err
 		case ExitOnError:
@@ -1022,8 +1022,8 @@ func (this *FlagSet) Parse(arguments []string) error {
 	return nil
 }
 
-func (this *FlagSet) Parsed() bool {
-	return this.parsed
+func (self *FlagSet) Parsed() bool {
+	return self.parsed
 }
 
 func Parse() {
@@ -1061,8 +1061,8 @@ func NewFlagSet(name string, errorHandling ErrorHandling) *FlagSet {
 	return flagSet
 }
 
-func (this *FlagSet) Init(name string, errorHandling ErrorHandling) {
-	this.name = name
+func (self *FlagSet) Init(name string, errorHandling ErrorHandling) {
+	self.name = name
 
-	this.errorHandling = errorHandling
+	self.errorHandling = errorHandling
 }
