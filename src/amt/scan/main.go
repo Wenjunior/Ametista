@@ -102,7 +102,7 @@ func Run(options Options) {
 	ports := parsePatterns(patterns)
 
 	if runtime.GOOS != "windows" {
-		ulimit.IncreaseUlimit(uint64(options.BatchSize))
+		ulimit.Increase(uint64(options.BatchSize))
 	}
 
 	timeOut := time.Duration(options.Seconds) * time.Second

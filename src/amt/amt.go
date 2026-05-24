@@ -10,6 +10,7 @@ import (
 	"amt/flag"
 	"amt/scan"
 	"amt/probe"
+	"amt/spider"
 )
 
 func main() {
@@ -79,6 +80,20 @@ func main() {
 
 	probeCommand.StringVar(&probeOptions.Output, "o", "", "File to write results to")
 
+	spiderCommand := flag.NewFlagSet("spider", flag.ExitOnError)
+
+	spiderOptions := spider.Options {}
+
+	spiderCommand.StringVar(&spiderOptions.URL, "u", "", "Target URL")
+
+	spiderCommand.StringVar(&spiderOptions.FileName, "l", "", "File containing a list of target URLs")
+
+	spiderCommand.IntVar(&spiderOptions.Seconds, "t", 10, "Set a timeout in seconds")
+
+	spiderCommand.IntVar(&spiderOptions.BatchSize, "b", 1500, "Set a batch size")
+
+	spiderCommand.StringVar(&spiderOptions.Output, "o", "", "File to write results to")
+
 	if len(os.Args) == 1 {
 		panic("Too few arguments")
 	}
@@ -96,9 +111,13 @@ func main() {
 		probeCommand.Parse(os.Args[2:])
 
 		probe.Run(probeOptions, show)
+	case "spider":
+		spiderCommand.Parse(os.Args[2:])
+
+		spider.Run(spiderOptions)
 	default:
 		if os.Args[1] == "-h" {
-			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP(S) probing")
+			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP(S) probing\n  spider\tWeb crawler")
 
 			return
 		}

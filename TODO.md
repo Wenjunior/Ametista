@@ -32,3 +32,9 @@
 	- `-fl` - content length
 	- `-fs` - string
 	- `-fr` - regex
+
+## Spider
+
+- Adicionar suporte a:
+	- robots.txt
+	- sitemap.xml
