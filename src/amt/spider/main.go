@@ -17,6 +17,7 @@ type Options struct {
 	Seconds int
 	BatchSize int
 	FileName string
+	Robots bool
 	Output string
 }
 
@@ -46,7 +47,7 @@ func Run(options Options) {
 			continue
 		}
 
-		result := crawler.Run(url, timeOut, options.BatchSize)
+		result := crawler.Run(url, options.Robots, timeOut, options.BatchSize)
 
 		results = append(results[:], result[:]...)
 	}

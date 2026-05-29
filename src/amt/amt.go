@@ -94,6 +94,8 @@ func main() {
 
 	spiderCommand.IntVar(&spiderOptions.BatchSize, "b", 1500, "Set a batch size")
 
+	spiderCommand.BoolVar(&spiderOptions.Robots, "robots", false, "Scrap URLs from robots.txt")
+
 	spiderCommand.StringVar(&spiderOptions.Output, "o", "", "File to write results to")
 
 	if len(os.Args) == 1 {

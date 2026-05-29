@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"io"
 	"fmt"
 	"sync"
 	"time"
@@ -20,6 +21,48 @@ import (
 )
 
 type Crawler struct {}
+
+func (self Crawler) parseRobotsTXT(timeOut time.Duration, baseURL string) ([]string, error) {
+	client := http.Client {
+		Timeout: timeOut,
+	}
+
+	response, err := client.Get(baseURL + "robots.txt")
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	var foundURLs []string
+
+	for line := range strings.Lines(string(body)) {
+		line = strings.TrimSpace(line)
+
+		if len(line) == 0 || !strings.HasPrefix(line, "allow:") && !strings.HasPrefix(line, "Allow:") && !strings.HasPrefix(line, "disallow:") && !strings.HasPrefix(line, "Disallow:") {
+			continue
+		}
+
+		path := strings.TrimPrefix(strings.TrimSpace(strings.Split(line, ":")[1]), "/")
+
+		if strings.Contains(path, "*") {
+			continue
+		}
+
+		foundURL := baseURL + path
+
+		foundURLs = append(foundURLs, foundURL)
+	}
+
+	return foundURLs, nil
+}
 
 func (self Crawler) crawl(url string, timeOut time.Duration, baseURL string, locker *sync.Mutex, result *[]string) {
 	client := http.Client {
@@ -89,7 +132,7 @@ func (self Crawler) crawl(url string, timeOut time.Duration, baseURL string, loc
 	locker.Unlock()
 }
 
-func (self Crawler) Run(url string, timeOut time.Duration, batchSize int) []string {
+func (self Crawler) Run(url string, robots bool, timeOut time.Duration, batchSize int) []string {
 	fmt.Println("Crawling " + url)
 
 	parsedURL, err := urlparser.Parse(url)
@@ -103,6 +146,16 @@ func (self Crawler) Run(url string, timeOut time.Duration, batchSize int) []stri
 	baseURL := parsedURL.Scheme + "://" + parsedURL.Host + "/"
 
 	foundURLs := []string{url}
+
+	if robots {
+		result, err := self.parseRobotsTXT(timeOut, baseURL)
+
+		if err == nil {
+			foundURLs = append(foundURLs, result...)
+		} else {
+			print.Eprintln("Could not parse robots.txt: " + err.Error())
+		}
+	}
 
 	semaphore := make(chan struct{}, batchSize)
 
@@ -124,7 +177,11 @@ func (self Crawler) Run(url string, timeOut time.Duration, batchSize int) []stri
 
 			defer func() { <- semaphore }()
 
+			locker.Lock()
+
 			print.Cprintln(foundURL, colors.GREEN)
+
+			locker.Unlock()
 
 			self.crawl(foundURL, timeOut, baseURL, &locker, &foundURLs)
 		} ()
