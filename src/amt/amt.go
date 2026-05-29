@@ -13,14 +13,16 @@ import (
 	"amt/spider"
 )
 
-func main() {
-	defer func() {
-		err := recover()
+func panicWithoutDebug() {
+	err := recover()
 
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-		}
-	} ()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+	}
+}
+
+func main() {
+	defer panicWithoutDebug()
 
 	subCommand := flag.NewFlagSet("sub", flag.ExitOnError)
 
@@ -117,11 +119,11 @@ func main() {
 		spider.Run(spiderOptions)
 	default:
 		if os.Args[1] == "-h" {
-			fmt.Println("Usage: amt [subcommand] [options]\n\nCommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP(S) probing\n  spider\tWeb crawler")
+			fmt.Println("Usage: amt [subcommand] [options]\n\nSubcommands:\n  sub\t\tPassive subdomain enumeration\n  scan\t\tTCP port scanner\n  probe\t\tHTTP(S) probing\n  spider\tWeb crawler")
 
 			return
 		}
 
-		panic("Unknown option(s)/subcommand")
+		panic("Unknown option/subcommand")
 	}
 }

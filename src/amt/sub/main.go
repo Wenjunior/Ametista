@@ -114,7 +114,7 @@ func Run(options Options) {
 		results = append(results[:], result[:]...)
 	}
 
-	fmt.Printf("%d subdomains was discovered\n", len(results))
+	fmt.Printf("%d subdomain(s) was discovered\n", len(results))
 
 	if options.Output != "" {
 		filesystem.WriteResults(options.Output, results)

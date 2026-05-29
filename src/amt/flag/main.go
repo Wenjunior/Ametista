@@ -14,11 +14,11 @@ import (
 	"encoding"
 )
 
-var ErrHelp = errors.New("flag: help requested")
-
 var errParse = errors.New("parse error")
 
 var errRange = errors.New("value out of range")
+
+var ErrHelp = errors.New("flag: help requested")
 
 func numError(err error) error {
 	numError, ok := err.(*strconv.NumError)
